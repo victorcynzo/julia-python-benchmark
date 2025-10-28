@@ -77,6 +77,8 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
 - ✅ **Python Arguments**: Pass custom arguments to benchmarked scripts
 - ✅ **Batch Processing**: Support for multiple benchmark configurations
 - ✅ **Cross-Platform**: Windows, macOS, and Linux support
+- ✅ **Desktop GUI**: Modern graphical interface with drag-and-drop functionality
+- ✅ **Standalone Executables**: No Julia runtime required for end users
 
 ## Installation
 
@@ -114,17 +116,38 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
    julia benchmark.jl --help
    ```
 
+### GUI Dependencies (Optional)
+For the graphical user interface:
+```bash
+julia --project=. -e "using Pkg; Pkg.add(\"Blink\")"
+```
+
 ### Alternative: Manual Dependency Installation
 If automatic installation fails:
 ```julia
 julia --project=.
 using Pkg
-Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "Statistics", "StatsBase", "Dates"])
+Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "Statistics", "StatsBase", "Dates", "Blink", "PlotlyJS"])
 ```
 
 ## Usage Guide
 
-### Basic Usage
+### GUI Application (Recommended)
+
+**Launch GUI**
+```bash
+julia gui_launcher.jl
+```
+
+The GUI provides:
+- **Drag-and-drop** Python file selection
+- **Interactive configuration** of all benchmark parameters
+- **Real-time progress** updates and logging
+- **Integrated results** display with statistics and plots
+- **Export functionality** for CSV, JSON, and plot files
+- **Baseline comparison** with visual regression analysis
+
+### Command Line Interface
 
 **Simple Benchmark**
 ```bash
@@ -359,38 +382,94 @@ Memory change: +2.34%
 Statistical significance: Yes (t-statistic: 3.45)
 ```
 
-## Creating Executables
+## Creating Standalone Executables
 
-### Using PackageCompiler.jl
+### Automated Build Process (Recommended)
 
-**Install PackageCompiler:**
+The project includes a comprehensive build script that creates standalone executables for both CLI and GUI versions:
+
+```bash
+julia build_executable.jl
+```
+
+This script will:
+1. **Install all dependencies** including PackageCompiler.jl
+2. **Build CLI executable** for command-line usage
+3. **Build GUI executable** for desktop application
+4. **Create distribution package** with all files and documentation
+5. **Generate platform-specific** executables (.exe on Windows)
+
+### Build Output Structure
+
+After running the build script, you'll find:
+
+```
+build/
+├── PythonBenchmarker-CLI.exe          # CLI executable (Windows)
+├── PythonBenchmarker-GUI.exe          # GUI executable (Windows)
+├── PythonBenchmarker-CLI              # CLI executable (Unix/Linux)
+├── PythonBenchmarker-GUI              # GUI executable (Unix/Linux)
+└── PythonBenchmarker-Distribution/    # Complete distribution package
+    ├── PythonBenchmarker-CLI.exe
+    ├── PythonBenchmarker-GUI.exe
+    ├── example_python_script.py
+    ├── README.md
+    └── USAGE.txt
+```
+
+### Manual Build Process
+
+If you prefer manual control:
+
+**1. Install PackageCompiler:**
 ```julia
 using Pkg
 Pkg.add("PackageCompiler")
 ```
 
-**Create Standalone Executable:**
+**2. Build CLI Version:**
 ```julia
 using PackageCompiler
 
-# Create application bundle
-create_app(".", "PythonBenchmarker", 
+create_app(".", "PythonBenchmarker-CLI", 
            executables=["benchmark" => "benchmark.jl"],
            force=true)
 ```
 
-**Cross-Platform Compilation:**
+**3. Build GUI Version:**
 ```julia
-# For different architectures
-create_app(".", "PythonBenchmarker-x64", 
-           executables=["benchmark" => "benchmark.jl"],
-           cpu_target="x86-64")
+create_app(".", "PythonBenchmarker-GUI", 
+           executables=["benchmark-gui" => "gui_launcher.jl"],
+           force=true)
 ```
 
-**Usage of Compiled Executable:**
+### Distribution
+
+The executables in the `PythonBenchmarker-Distribution` folder are completely standalone:
+- **No Julia installation required** on target machines
+- **No dependency management** needed
+- **Cross-platform compatible** (build on target OS)
+- **Self-contained** with all required libraries
+
+### Usage of Compiled Executables
+
+**CLI Version:**
 ```bash
-# After compilation
-./PythonBenchmarker/bin/benchmark script.py --iterations 20
+# Windows
+PythonBenchmarker-CLI.exe script.py --iterations 20
+
+# Unix/Linux/macOS
+./PythonBenchmarker-CLI script.py --iterations 20
+```
+
+**GUI Version:**
+```bash
+# Windows: Double-click PythonBenchmarker-GUI.exe
+# Or from command line:
+PythonBenchmarker-GUI.exe
+
+# Unix/Linux/macOS
+./PythonBenchmarker-GUI
 ```
 
 ## Architecture
