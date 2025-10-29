@@ -109,7 +109,7 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
 2. **Clone the Repository**
    ```bash
    git clone https://github.com/victorcynzo/julia-python-benchmark
-   cd julia-python-benchmarker
+   cd julia-python-benchmark
    ```
 
 3. **Install Julia Dependencies**
