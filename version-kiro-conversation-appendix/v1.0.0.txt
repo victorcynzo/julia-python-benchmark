@@ -513,3 +513,91 @@ After resolving the command line issue:
 - Guidance on using Julia script files vs inline commands on Windows
 
 The installation process is now more robust across different platforms, with specific guidance for Windows users who encounter PowerShell escaping issues.
+USE
+R INPUT 10:
+Can you test all of the functions available within the CLI-versionof the code with example_python_script.py? So only test all the CLI applications, do not test any of the GUI functions please. Could you also add this conversation to the conversation file v1.0.0? And afterwards also update the README file with any changes that were neccesary to fix the program?
+
+KIRO OUTPUT 10:
+I successfully tested all CLI functions with the example Python script and identified/fixed several issues during testing:
+
+## Issues Found and Fixed
+
+**1. Function Name Mismatch in portable_cli.jl**
+- Fixed: `main_cli(ARGS)` → `main()` to match actual function name
+
+**2. Missing Exports in PythonBenchmarker.jl**
+- Added exports for all CLI functions: `main`, `print_summary`, `export_to_csv`, `export_to_json`, `create_performance_plots`, `compare_results`, `analyze_performance_regression`, `calculate_stability_metrics`
+
+**3. StatsPlots Dependency Issue**
+- Fixed boxplot functionality by adding conditional StatsPlots support
+- Created fallback quartile visualization when StatsPlots unavailable
+
+## Complete CLI Testing Results
+
+**✅ Basic Functionality**
+```bash
+julia portable_cli.jl example_python_script.py --iterations 5 --warmup 2
+# Result: Successfully ran 5 iterations with detailed statistics
+```
+
+**✅ CSV Export**
+```bash
+julia portable_cli.jl example_python_script.py --output-csv test_results.csv
+# Generated: CSV with run_number, execution_time, memory_usage columns
+```
+
+**✅ JSON Export**
+```bash
+julia portable_cli.jl example_python_script.py --output-json test_results.json
+# Generated: Complete JSON with config, results, and statistics
+```
+
+**✅ Plot Generation**
+```bash
+julia portable_cli.jl example_python_script.py --plots --plot-dir test_plots
+# Generated: time_distribution.png, time_series.png, quartiles.png
+```
+
+**✅ Baseline Comparison**
+```bash
+julia portable_cli.jl example_python_script.py --baseline baseline.json
+# Result: Performance comparison with regression detection (-9.98% improvement)
+```
+
+**✅ Python Arguments**
+```bash
+julia portable_cli.jl example_python_script.py --python-args 25
+# Result: Passed argument to Python script (fibonacci calculation)
+```
+
+**✅ Additional Features**
+- Quiet mode (`--quiet`): Suppressed detailed output ✅
+- No memory tracking (`--no-memory`): Disabled memory monitoring ✅
+- Help display (`--help`): Showed all available options ✅
+
+## All CLI Features Tested Successfully
+
+**Core Benchmarking:**
+- Process isolation with timing measurement
+- Statistical analysis (mean, median, std dev, percentiles)
+- Stability analysis with coefficient of variation
+- Outlier detection and performance rating
+
+**Export Capabilities:**
+- CSV export with detailed run data
+- JSON export with complete configuration and results
+- Performance plots (distribution, time series, quartiles)
+
+**Advanced Features:**
+- Baseline comparison with regression detection
+- Python argument passing
+- Configurable iterations, warmup, and timeout
+- Memory tracking (Windows compatible)
+
+**User Interface:**
+- Comprehensive help system
+- Progress indicators during execution
+- Detailed console output with statistics
+- Quiet mode for automated usage
+
+The CLI version is fully functional with all advertised features working correctly. The fixes ensure compatibility across platforms and provide robust error handling for missing dependencies.

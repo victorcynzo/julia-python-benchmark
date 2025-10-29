@@ -3,6 +3,14 @@ using DataFrames
 using JSON3
 using Plots
 
+# Try to load StatsPlots for boxplot functionality
+const STATSPLOTS_AVAILABLE = try
+    using StatsPlots
+    true
+catch
+    false
+end
+
 function print_summary(result::BenchmarkResult)
     """Print benchmark results summary to console"""
     
@@ -130,13 +138,25 @@ function create_performance_plots(result::BenchmarkResult, output_dir::String="p
     
     savefig(p2, joinpath(output_dir, "time_series.png"))
     
-    # Box plot for quartiles
-    p3 = boxplot([result.execution_times], 
-                 title="Execution Time Box Plot",
-                 ylabel="Time (seconds)",
-                 legend=false)
-    
-    savefig(p3, joinpath(output_dir, "box_plot.png"))
+    # Box plot for quartiles (if StatsPlots is available)
+    if STATSPLOTS_AVAILABLE
+        p3 = boxplot([result.execution_times], 
+                     title="Execution Time Box Plot",
+                     ylabel="Time (seconds)",
+                     legend=false)
+        
+        savefig(p3, joinpath(output_dir, "box_plot.png"))
+    else
+        # Alternative: quartile visualization using scatter plot
+        q1, q2, q3 = percentile(result.execution_times, [25, 50, 75])
+        p3 = scatter([1], [q2], title="Execution Time Quartiles",
+                     ylabel="Time (seconds)", 
+                     yerror=([q2-q1], [q3-q2]),
+                     markersize=8, legend=false,
+                     xlims=(0.5, 1.5), xticks=([1], ["Quartiles"]))
+        
+        savefig(p3, joinpath(output_dir, "quartiles.png"))
+    end
     
     # Memory usage if available
     if length(result.memory_usage) > 0 && any(x -> x > 0, result.memory_usage)

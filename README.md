@@ -8,6 +8,20 @@ A comprehensive Julia-based benchmarking tool for Python scripts featuring proce
 
 This is an alpha release of Python Benchmarker, representing the first stable implementation of our comprehensive benchmarking framework. While feature-complete and thoroughly tested, this alpha designation indicates ongoing refinement of the user experience and API stability. The core benchmarking engine, statistical analysis capabilities, and cross-platform compatibility have been validated across multiple environments. Users can expect reliable performance measurements and accurate statistical insights, with continued improvements in upcoming releases based on community feedback and real-world usage patterns.
 
+### Recent Fixes and Improvements (v1.0.0)
+
+**CLI Functionality Enhancements:**
+- Fixed function name mismatch in `portable_cli.jl` (main_cli → main)
+- Added comprehensive exports for all CLI functions in main module
+- Resolved StatsPlots dependency issue with graceful fallback for boxplot functionality
+- Enhanced cross-platform compatibility for plot generation
+
+**Robustness Improvements:**
+- All CLI features thoroughly tested and validated
+- Improved error handling for missing optional dependencies
+- Enhanced Windows PowerShell compatibility for installation commands
+- Added fallback visualization options when advanced plotting libraries unavailable
+
 ## Table of Contents
 - [How It Works](#how-it-works)
 - [Features](#features)
@@ -610,6 +624,29 @@ chmod +x script.py
 
 # Check Julia permissions
 julia --version
+```
+
+**6. CLI Function Errors (Fixed in v1.0.0)**
+If you encounter `main_cli` not found errors:
+```bash
+# This has been fixed - portable_cli.jl now correctly calls main()
+julia portable_cli.jl script.py --help
+```
+
+**7. Missing Export Errors (Fixed in v1.0.0)**
+If you get "function not exported" errors:
+```julia
+# All CLI functions are now properly exported from PythonBenchmarker module
+using PythonBenchmarker
+# All functions now available: main, print_summary, export_to_csv, etc.
+```
+
+**8. StatsPlots/Boxplot Errors (Fixed in v1.0.0)**
+If plot generation fails with boxplot errors:
+```bash
+# The tool now gracefully falls back to quartile plots when StatsPlots unavailable
+julia portable_cli.jl script.py --plots
+# Will generate: time_distribution.png, time_series.png, quartiles.png
 ```
 
 ### Performance Tips
