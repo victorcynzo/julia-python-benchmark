@@ -154,4 +154,42 @@ USER INPUT #5:
 "And remove the two ## before each user input and kiro output please thank you"
 
 KIRO OUTPUT #5:
-Done! I've removed all the `##` markdown headers before each USER INPUT and KIRO OUTPUT throughout the conversation log. The formatting is now cleaner without the markdown header syntax.
+Done! I've removed all the `##` markdown headers before each USER INPUT and KIRO OUTPUT throughout the conversation log. The formatting is now cleaner without the markdown header syntax.---
+
+
+USER INPUT #6:
+"The README.md file still contains text on a GUI executable and a GUI standalone version, I thought we changed the code to only have a CLI version? Could you check if that is indeed true and then change the README to only have a CLI version? And make a very detailed description of how to download, install, run, and use the CLI version with all possible features and how to use them? And update this and your output to the v1.0.2.txt"
+
+KIRO OUTPUT #6:
+You're absolutely right! I found several GUI references still in the README that needed to be removed. I've now:
+
+**REMOVED GUI REFERENCES:**
+- Updated build script description to mention CLI-only
+- Removed GUI executable references from build output structure
+- Replaced GUI build instructions with CLI-only notes
+- Removed GUI usage examples
+- Fixed troubleshooting section to remove GUI-specific errors
+
+**ENHANCED CLI DOCUMENTATION:**
+- Added comprehensive CLI usage section with detailed syntax
+- Included portable CLI usage instructions
+- Added 8 detailed usage examples covering:
+  1. Quick performance checks
+  2. Detailed performance analysis
+  3. Regression testing workflow
+  4. Memory-intensive script analysis
+  5. Scripts with arguments
+  6. Batch processing multiple scripts
+  7. Production performance monitoring
+  8. Cross-platform testing
+
+**IMPROVED INSTALLATION SECTION:**
+- Added detailed platform-specific Julia installation instructions
+- Included three installation methods:
+  1. Direct download and setup (most common)
+  2. Portable installation (no system changes)
+  3. Standalone executable creation (advanced)
+- Added verification steps and troubleshooting
+- Included test commands to ensure everything works
+
+The README now provides a comprehensive CLI-only guide with detailed instructions for download, installation, and usage of all features.

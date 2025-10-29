@@ -125,31 +125,102 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
 
 ### Step-by-Step Installation
 
+#### Method 1: Direct Download and Setup
+
 1. **Install Julia**
-   ```bash
-   # On Ubuntu/Debian
-   sudo apt install julia
    
-   # On macOS with Homebrew
+   **Windows:**
+   - Download from [julialang.org](https://julialang.org/downloads/)
+   - Run the installer and follow the setup wizard
+   - Add Julia to PATH when prompted
+   
+   **macOS:**
+   ```bash
+   # Using Homebrew (recommended)
    brew install julia
    
-   # On Windows: Download from julialang.org
+   # Or download from julialang.org
+   ```
+   
+   **Linux (Ubuntu/Debian):**
+   ```bash
+   sudo apt update
+   sudo apt install julia
+   
+   # Or for latest version:
+   wget https://julialang-s3.julialang.org/bin/linux/x64/1.10/julia-1.10.0-linux-x86_64.tar.gz
+   tar -xzf julia-1.10.0-linux-x86_64.tar.gz
+   sudo mv julia-1.10.0 /opt/
+   sudo ln -s /opt/julia-1.10.0/bin/julia /usr/local/bin/julia
    ```
 
-2. **Clone the Repository**
+2. **Verify Julia Installation**
+   ```bash
+   julia --version
+   # Should output: julia version 1.x.x
+   ```
+
+3. **Clone the Repository**
    ```bash
    git clone https://github.com/victorcynzo/julia-python-benchmark
    cd julia-python-benchmark
    ```
 
-3. **Install Julia Dependencies**
+4. **Install Dependencies**
    ```bash
+   # Automatic installation (recommended)
    julia --project=. -e "using Pkg; Pkg.instantiate()"
+   
+   # Manual installation if automatic fails
+   julia --project=. -e "using Pkg; Pkg.add([\"ArgParse\", \"BenchmarkTools\", \"CSV\", \"DataFrames\", \"JSON3\", \"Plots\", \"Statistics\", \"StatsBase\", \"Dates\", \"PlotlyJS\"])"
    ```
 
-4. **Verify Installation**
+5. **Verify Installation**
    ```bash
    julia benchmark.jl --help
+   # Should display help information
+   ```
+
+6. **Test with Example Script**
+   ```bash
+   julia benchmark.jl example_python_script.py --iterations 5
+   # Should run successfully and create output directory
+   ```
+
+#### Method 2: Portable Installation
+
+If you need to run the benchmarker without modifying system Julia packages:
+
+1. **Download and Extract**
+   ```bash
+   git clone https://github.com/victorcynzo/julia-python-benchmark
+   cd julia-python-benchmark
+   ```
+
+2. **Use Portable CLI**
+   ```bash
+   julia portable_cli.jl example_python_script.py --help
+   # Automatically handles project activation
+   ```
+
+#### Method 3: Standalone Executable (Advanced)
+
+Create a standalone executable that doesn't require Julia installation on target machines:
+
+1. **Build Executable**
+   ```bash
+   julia create_executables.jl
+   ```
+
+2. **Use Built Executable**
+   ```bash
+   # Windows
+   cd build
+   .\PythonBenchmarker-CLI.bat script.py --iterations 10
+   
+   # Unix/Linux/macOS
+   cd build
+   ./PythonBenchmarker-CLI script.py --iterations 10
    ```
 
 ### Alternative: Manual Dependency Installation
@@ -168,9 +239,9 @@ Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "S
    - **Error**: `syntax: unsupported 'const' declaration on local variable` or `ParseError: Expected 'end'`
    - **Solution**: These syntax errors have been fixed in the current version. Ensure you have the latest code.
 
-2. **JavaScript Template Literal Errors**
-   - **Error**: `identifier or parenthesized expression expected after $ in string`
-   - **Solution**: Fixed by properly escaping JavaScript template literals in GUI code.
+2. **Dependency Resolution Issues**
+   - **Error**: Package conflicts or missing dependencies
+   - **Solution**: Use `julia --project=. -e "using Pkg; Pkg.resolve(); Pkg.instantiate()"`
 
 3. **Missing Dependencies**
    ```bash
@@ -195,15 +266,56 @@ Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "S
 
 ### Command Line Interface
 
-**Simple Benchmark**
+Python Benchmarker provides a comprehensive CLI with extensive options for professional performance analysis.
+
+#### Quick Start
+
+**1. Simple Benchmark (Default Settings)**
 ```bash
 julia benchmark.jl example_python_script.py
 ```
+This runs 10 iterations with 3 warmup runs and creates organized output in `test-results-{script}-{timestamp}/`
 
-**With Custom Iterations**
+**2. Basic Customization**
 ```bash
 julia benchmark.jl script.py --iterations 20 --warmup 5
 ```
+
+**3. With Visualization**
+```bash
+julia benchmark.jl script.py --plots
+```
+Generates performance plots in the output directory
+
+#### Detailed CLI Usage
+
+**Complete Syntax:**
+```bash
+julia benchmark.jl <python_file> [OPTIONS]
+```
+
+**Essential Options:**
+- `--iterations, -i`: Number of benchmark runs (default: 10)
+- `--warmup, -w`: Number of warmup runs (default: 3)
+- `--timeout, -t`: Timeout per run in seconds (default: 300.0)
+- `--plots`: Generate performance visualization plots
+- `--quiet, -q`: Suppress detailed output
+
+**Advanced Options:**
+- `--no-memory`: Disable memory tracking (useful for Windows)
+- `--output-csv FILE`: Export raw data to custom CSV file
+- `--output-json FILE`: Export complete results to custom JSON file
+- `--plot-dir DIR`: Custom directory for plots (default: "plots")
+- `--baseline FILE`: Compare against previous results from JSON file
+- `--python-args ARG1 ARG2...`: Pass arguments to the Python script
+
+#### Portable CLI Usage
+
+For environments where you can't modify the project directory:
+```bash
+julia portable_cli.jl script.py [OPTIONS]
+```
+This script automatically handles project activation and dependencies.
 
 ### Organized Output Directories
 
@@ -233,39 +345,88 @@ julia portable_cli.jl my_algorithm.py --plots
 - ✅ **Automatic exports** - CSV and JSON always generated
 - ✅ **Clean workspace** - No clutter in main directory
 
-### Advanced Usage Examples
+### Comprehensive Usage Examples
 
-**Complete Performance Analysis**
+#### 1. Quick Performance Check
 ```bash
+# Basic benchmark with default settings
+julia benchmark.jl my_algorithm.py
+
+# With visualization
+julia benchmark.jl my_algorithm.py --plots
+```
+
+#### 2. Detailed Performance Analysis
+```bash
+# Comprehensive analysis with custom settings
 julia benchmark.jl my_script.py \
     --iterations 50 \
     --warmup 10 \
-    --output-json results_$(date +%Y%m%d).json \
-    --output-csv raw_data.csv \
     --plots \
-    --plot-dir performance_charts \
-    --python-args input.txt --verbose
+    --plot-dir detailed_analysis \
+    --output-json results_$(date +%Y%m%d).json
 ```
 
-**Regression Testing**
+#### 3. Regression Testing Workflow
 ```bash
-# First run (establish baseline)
-julia benchmark.jl script.py --output-json baseline.json
-
-# Later run (compare against baseline)
+# Step 1: Establish baseline
 julia benchmark.jl script.py \
-    --baseline baseline.json \
-    --output-json current.json \
+    --iterations 30 \
+    --output-json baseline_v1.json \
+    --plots
+
+# Step 2: Test after changes
+julia benchmark.jl script.py \
+    --iterations 30 \
+    --baseline baseline_v1.json \
+    --output-json current_v2.json \
     --plots
 ```
 
-**Memory-Intensive Analysis**
+#### 4. Memory-Intensive Script Analysis
 ```bash
+# For scripts with high memory usage
 julia benchmark.jl memory_heavy_script.py \
-    --iterations 30 \
+    --iterations 20 \
     --timeout 600 \
     --plots \
     --plot-dir memory_analysis
+```
+
+#### 5. Script with Arguments
+```bash
+# Benchmark a Python script that takes arguments
+julia benchmark.jl data_processor.py \
+    --python-args input.csv --output results.csv --threads 4 \
+    --iterations 15 \
+    --plots
+```
+
+#### 6. Batch Processing Multiple Scripts
+```bash
+# Benchmark multiple scripts in sequence
+for script in algorithm1.py algorithm2.py algorithm3.py; do
+    julia benchmark.jl $script --iterations 25 --plots --quiet
+done
+```
+
+#### 7. Production Performance Monitoring
+```bash
+# Automated performance monitoring
+julia benchmark.jl production_script.py \
+    --iterations 100 \
+    --baseline production_baseline.json \
+    --output-json "monitoring_$(date +%Y%m%d_%H%M%S).json" \
+    --quiet
+```
+
+#### 8. Cross-Platform Testing
+```bash
+# Windows (PowerShell)
+julia benchmark.jl script.py --iterations 20 --plots
+
+# Unix/Linux/macOS
+julia benchmark.jl script.py --iterations 20 --plots
 ```
 
 ### Command Line Options Reference
@@ -485,7 +646,7 @@ Statistical significance: Yes (t-statistic: 3.45)
 
 ### Automated Build Process (Recommended)
 
-The project includes a comprehensive build script that creates standalone executables for both CLI and GUI versions:
+The project includes a comprehensive build script that creates standalone executables for the CLI version:
 
 ```bash
 julia build_executable.jl
@@ -494,9 +655,8 @@ julia build_executable.jl
 This script will:
 1. **Install all dependencies** including PackageCompiler.jl
 2. **Build CLI executable** for command-line usage
-3. **Build GUI executable** for desktop application
-4. **Create distribution package** with all files and documentation
-5. **Generate platform-specific** executables (.exe on Windows)
+3. **Create distribution package** with all files and documentation
+4. **Generate platform-specific** executables (.exe on Windows)
 
 ### Build Output Structure
 
@@ -505,12 +665,9 @@ After running the build script, you'll find:
 ```
 build/
 ├── PythonBenchmarker-CLI.exe          # CLI executable (Windows)
-├── PythonBenchmarker-GUI.exe          # GUI executable (Windows)
 ├── PythonBenchmarker-CLI              # CLI executable (Unix/Linux)
-├── PythonBenchmarker-GUI              # GUI executable (Unix/Linux)
 └── PythonBenchmarker-Distribution/    # Complete distribution package
     ├── PythonBenchmarker-CLI.exe
-    ├── PythonBenchmarker-GUI.exe
     ├── example_python_script.py
     ├── README.md
     └── USAGE.txt
@@ -535,12 +692,7 @@ create_app(".", "PythonBenchmarker-CLI",
            force=true)
 ```
 
-**3. Build GUI Version:**
-```julia
-create_app(".", "PythonBenchmarker-GUI", 
-           executables=["benchmark-gui" => "gui_launcher.jl"],
-           force=true)
-```
+**Note:** GUI version has been removed in v1.0.2. Only CLI executable is available.
 
 ### Distribution
 
@@ -561,15 +713,7 @@ PythonBenchmarker-CLI.exe script.py --iterations 20
 ./PythonBenchmarker-CLI script.py --iterations 20
 ```
 
-**GUI Version:**
-```bash
-# Windows: Double-click PythonBenchmarker-GUI.exe
-# Or from command line:
-PythonBenchmarker-GUI.exe
-
-# Unix/Linux/macOS
-./PythonBenchmarker-GUI
-```
+**Note:** GUI version has been removed in v1.0.2 for streamlined CLI-only experience.
 
 ## Architecture
 
