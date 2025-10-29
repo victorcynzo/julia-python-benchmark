@@ -8,7 +8,7 @@ Supports both CLI and GUI versions
 using Pkg
 
 println("🔧 Python Benchmarker Build Script")
-println("=" * 50)
+println(repeat("=", 50))
 
 # Activate project environment
 println("📦 Activating project environment...")
@@ -30,17 +30,17 @@ println("📦 Installing project dependencies...")
 Pkg.instantiate()
 
 # Check for GUI dependencies
-gui_available = false
+global gui_available = false
 try
     using Blink
-    gui_available = true
+    global gui_available = true
     println("✅ GUI dependencies available")
 catch
     println("⚠️  GUI dependencies not available. Installing Blink.jl...")
     try
         Pkg.add("Blink")
         using Blink
-        gui_available = true
+        global gui_available = true
         println("✅ Blink.jl installed successfully")
     catch e
         println("❌ Failed to install Blink.jl: $e")
@@ -73,7 +73,7 @@ if build_cli
             ".",
             cli_app_dir,
             executables = ["benchmark" => "benchmark.jl"],
-            precompile_execution_file = "benchmark.jl",
+            precompile_execution_file = "precompile_test.jl",
             force = true,
             include_lazy_artifacts = true
         )
@@ -114,7 +114,7 @@ if build_gui
             ".",
             gui_app_dir,
             executables = ["benchmark-gui" => "gui_launcher.jl"],
-            precompile_execution_file = "gui_launcher.jl",
+            precompile_execution_file = "precompile_test.jl",
             force = true,
             include_lazy_artifacts = true
         )
@@ -261,7 +261,7 @@ end
 
 # Print final summary
 println("\n🎉 Build Summary:")
-println("=" * 50)
+println(repeat("=", 50))
 
 if build_cli
     cli_exe = Sys.iswindows() ? "PythonBenchmarker-CLI.exe" : "PythonBenchmarker-CLI"
