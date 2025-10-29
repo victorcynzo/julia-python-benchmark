@@ -759,8 +759,8 @@ function create_html_interface()
                     const card = document.createElement('div');
                     card.className = 'stat-card';
                     card.innerHTML = `
-                        <div class="stat-value">${stat.value}</div>
-                        <div class="stat-label">${stat.label}</div>
+                        <div class="stat-value">\${stat.value}</div>
+                        <div class="stat-label">\${stat.label}</div>
                     `;
                     statsGrid.appendChild(card);
                 });
@@ -774,13 +774,13 @@ function create_html_interface()
                             <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">Metric</th>
                             <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">Value</th>
                         </tr>
-                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">Total Runs</td><td style="padding: 10px; border: 1px solid #dee2e6;">${results.total_runs}</td></tr>
-                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">Successful Runs</td><td style="padding: 10px; border: 1px solid #dee2e6;">${results.success_count}</td></tr>
-                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">Failed Runs</td><td style="padding: 10px; border: 1px solid #dee2e6;">${results.total_runs - results.success_count}</td></tr>
-                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">25th Percentile</td><td style="padding: 10px; border: 1px solid #dee2e6;">${results.percentiles['25'].toFixed(4)}s</td></tr>
-                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">75th Percentile</td><td style="padding: 10px; border: 1px solid #dee2e6;">${results.percentiles['75'].toFixed(4)}s</td></tr>
-                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">95th Percentile</td><td style="padding: 10px; border: 1px solid #dee2e6;">${results.percentiles['95'].toFixed(4)}s</td></tr>
-                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">99th Percentile</td><td style="padding: 10px; border: 1px solid #dee2e6;">${results.percentiles['99'].toFixed(4)}s</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">Total Runs</td><td style="padding: 10px; border: 1px solid #dee2e6;">\${results.total_runs}</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">Successful Runs</td><td style="padding: 10px; border: 1px solid #dee2e6;">\${results.success_count}</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">Failed Runs</td><td style="padding: 10px; border: 1px solid #dee2e6;">\${results.total_runs - results.success_count}</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">25th Percentile</td><td style="padding: 10px; border: 1px solid #dee2e6;">\${results.percentiles['25'].toFixed(4)}s</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">75th Percentile</td><td style="padding: 10px; border: 1px solid #dee2e6;">\${results.percentiles['75'].toFixed(4)}s</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">95th Percentile</td><td style="padding: 10px; border: 1px solid #dee2e6;">\${results.percentiles['95'].toFixed(4)}s</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #dee2e6;">99th Percentile</td><td style="padding: 10px; border: 1px solid #dee2e6;">\${results.percentiles['99'].toFixed(4)}s</td></tr>
                     </table>
                 `;
             }
@@ -793,8 +793,8 @@ function create_html_interface()
                         const plotDiv = document.createElement('div');
                         plotDiv.className = 'plot-container';
                         plotDiv.innerHTML = `
-                            <h5>${plot.title}</h5>
-                            <img src="${plot.path}" alt="${plot.title}">
+                            <h5>\${plot.title}</h5>
+                            <img src="\${plot.path}" alt="\${plot.title}">
                         `;
                         plotsContent.appendChild(plotDiv);
                     });
@@ -827,8 +827,9 @@ function create_html_interface()
     </body>
     </html>
     """
-endfunc
-tion setup_js_handlers(window)
+end
+
+function setup_js_handlers(window)
     """Set up JavaScript message handlers"""
     
     # Handle file selection

@@ -99,8 +99,9 @@ function export_to_json(result::BenchmarkResult, filename::String)
     
     JSON3.write(filename, result_dict)
     println("Complete results exported to: $filename")
-endfun
-ction create_performance_plots(result::BenchmarkResult, output_dir::String="plots")
+end
+
+function create_performance_plots(result::BenchmarkResult, output_dir::String="plots")
     """Generate performance visualization plots"""
     
     if !isdir(output_dir)

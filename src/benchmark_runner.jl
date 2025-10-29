@@ -92,8 +92,8 @@ function run_isolated_python(config::BenchmarkConfig)
                error=string(e))
     end
 end
-fu
-nction run_benchmark(config::BenchmarkConfig)
+
+function run_benchmark(config::BenchmarkConfig)
     """Main benchmarking function with process isolation"""
     
     println("Starting benchmark of $(config.python_file)")

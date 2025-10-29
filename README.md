@@ -124,8 +124,27 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
 
 ### GUI Dependencies (Optional)
 For the graphical user interface:
+
+**Linux/macOS:**
 ```bash
 julia --project=. -e "using Pkg; Pkg.add(\"Blink\")"
+```
+
+**Windows (PowerShell):**
+Due to PowerShell escaping issues, use a Julia script:
+```bash
+# Create temporary script
+echo 'using Pkg; Pkg.add("Blink")' > install_blink.jl
+julia --project=. install_blink.jl
+del install_blink.jl
+```
+
+**Alternative (All Platforms):**
+```julia
+julia --project=.
+# In Julia REPL:
+using Pkg
+Pkg.add("Blink")
 ```
 
 ### Alternative: Manual Dependency Installation
@@ -135,6 +154,37 @@ julia --project=.
 using Pkg
 Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "Statistics", "StatsBase", "Dates", "Blink", "PlotlyJS"])
 ```
+
+### Installation Troubleshooting
+
+**Common Issues and Solutions:**
+
+1. **Precompilation Errors with Broken Function Declarations**
+   - **Error**: `syntax: unsupported 'const' declaration on local variable` or `ParseError: Expected 'end'`
+   - **Solution**: These syntax errors have been fixed in the current version. Ensure you have the latest code.
+
+2. **JavaScript Template Literal Errors**
+   - **Error**: `identifier or parenthesized expression expected after $ in string`
+   - **Solution**: Fixed by properly escaping JavaScript template literals in GUI code.
+
+3. **Missing Dependencies**
+   ```bash
+   julia --project=. -e "using Pkg; Pkg.resolve(); Pkg.instantiate()"
+   ```
+
+4. **Windows PowerShell Command Line Issues**
+   - **Error**: `invalid escape sequence` when running Julia commands with quotes
+   - **Solution**: Use Julia script files instead of inline commands, or use the Julia REPL directly
+
+5. **GUI Dependencies Fail**
+   - The tool works in CLI mode even if Blink.jl fails to install
+   - GUI functionality will be automatically disabled with a warning message
+
+6. **Module Loading Issues**
+   ```bash
+   # Test if module loads correctly
+   julia --project=. -e "using PythonBenchmarker"
+   ```
 
 ## Usage Guide
 

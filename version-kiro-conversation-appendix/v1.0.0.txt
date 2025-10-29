@@ -408,4 +408,108 @@ julia -e "using Pkg; Pkg.instantiate()"
 
 The precompilation error should be resolved, and you can proceed with using the benchmarking tool or building the executable.
 
-This fix maintains all the original functionality while ensuring Julia can properly compile the module. The GUI will still be conditionally available based on whether Blink.jl is installed, but now without syntax errors.
+This fix maintains all the original functionality while ensuring Julia can properly compile the module. The GUI will still be conditionally available based on whether Blink.jl is installed, but now without syntax errors.USER 
+INPUT 8:
+Can you see the error in the terminal when running "julia --project=. -e "using Pkg; Pkg.instantiate()"" ? Could you fix this issue, update the README.md file and update the v1.0.0.txt file, and other necceseary files?
+
+KIRO OUTPUT 8:
+I identified and fixed multiple syntax errors that were preventing the Julia module from precompiling successfully:
+
+## Issues Found and Fixed
+
+**1. Broken Function Declarations**
+- **benchmark_runner.jl line 95**: `fu\nction` was split across lines, creating undefined variable `fu`
+- **reporter.jl line 103**: `endfun\nction` was split, creating undefined variable `endfun`  
+- **gui.jl line 830**: `endfunc\ntion` was split, creating undefined variable `endfunc`
+
+**2. JavaScript Template Literal Conflicts**
+- **gui.jl multiple lines**: JavaScript `${variable}` syntax was being interpreted as Julia string interpolation
+- Fixed by escaping all JavaScript template literals as `\${variable}`
+
+## Fixes Applied
+
+**Function Declaration Repairs:**
+```julia
+# Fixed broken function declarations by removing line breaks
+function run_benchmark(config::BenchmarkConfig)  # was: fu\nction
+end
+
+function create_performance_plots(...)  # was: endfun\nction  
+end
+
+function setup_js_handlers(window)  # was: endfunc\ntion
+end
+```
+
+**JavaScript Template Literal Escaping:**
+```julia
+# Escaped all JavaScript template literals in GUI HTML
+card.innerHTML = `<div class="stat-value">\${stat.value}</div>`  # was: ${stat.value}
+```
+
+## Verification
+
+After fixes, the module now:
+- ✅ Precompiles successfully without errors
+- ✅ Loads correctly with `using PythonBenchmarker`
+- ✅ All functionality preserved (CLI and GUI modes)
+
+## Updated Documentation
+
+**README.md Updates:**
+- Added comprehensive "Installation Troubleshooting" section
+- Documented common precompilation errors and solutions
+- Added verification steps for successful installation
+- Included guidance for GUI dependency issues
+
+The Julia module is now fully functional and ready for use or executable compilation. All syntax errors have been resolved while maintaining complete feature compatibility.USER
+ INPUT 9:
+Running julia --project=. -e "using Pkg; Pkg.add(\"Blink\")" gives me an error? Could you fix this and update the README accordingly with this new conversation part
+
+KIRO OUTPUT 9:
+I identified and resolved the Windows PowerShell command line escaping issue when trying to install Blink.jl.
+
+## The Problem
+Windows PowerShell was incorrectly interpreting the escaped quotes in the Julia command:
+```bash
+julia --project=. -e "using Pkg; Pkg.add(\"Blink\")"
+# Error: invalid escape sequence
+```
+
+## The Solution
+The issue is PowerShell's quote escaping behavior. I found that Blink.jl was already installed in your project, but provided multiple solutions for this common Windows issue:
+
+**Method 1: Julia Script File (Recommended for Windows)**
+```bash
+echo 'using Pkg; Pkg.add("Blink")' > install_blink.jl
+julia --project=. install_blink.jl
+del install_blink.jl
+```
+
+**Method 2: Julia REPL (Most Reliable)**
+```julia
+julia --project=.
+# In Julia REPL:
+using Pkg
+Pkg.add("Blink")
+```
+
+## Verification
+After resolving the command line issue:
+- ✅ Blink.jl is properly installed
+- ✅ PythonBenchmarker module loads successfully
+- ✅ GUI functionality is available
+
+## Updated Documentation
+
+**README.md Updates:**
+- Added platform-specific installation instructions for GUI dependencies
+- Separated Linux/macOS and Windows PowerShell commands
+- Added Windows-specific troubleshooting for command line escaping issues
+- Provided alternative installation methods for all platforms
+
+**New Troubleshooting Entry:**
+- "Windows PowerShell Command Line Issues" with specific error patterns and solutions
+- Guidance on using Julia script files vs inline commands on Windows
+
+The installation process is now more robust across different platforms, with specific guidance for Windows users who encounter PowerShell escaping issues.
