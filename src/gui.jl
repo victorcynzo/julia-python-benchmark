@@ -857,14 +857,18 @@ function setup_js_handlers(window)
             @js window appendLog("Starting benchmark...")
             @js window updateProgress(10, "Initializing benchmark...")
             
+            # Create organized output directory
+            output_dir = create_output_directory_gui(args["python_file"])
+            @js window appendLog("Created output directory: $output_dir")
+            
             # Run benchmark in separate task to avoid blocking GUI
             @async begin
                 try
                     result = run_benchmark_with_gui_updates(current_config, window)
                     current_result = result
                     
-                    # Prepare results for JavaScript
-                    js_results = prepare_results_for_js(result, args)
+                    # Prepare results for JavaScript with output directory
+                    js_results = prepare_results_for_js(result, args, output_dir)
                     
                     @js window displayResults($js_results)
                     @js window showSuccess("Benchmark completed successfully!")
@@ -892,6 +896,23 @@ function setup_js_handlers(window)
             @js window showError("Download failed: $(string(e))")
         end
     end
+end
+
+function create_output_directory_gui(python_file::String)
+    """Create organized output directory for GUI version"""
+    # Extract filename without extension
+    base_name = splitext(basename(python_file))[1]
+    
+    # Create directory name with timestamp for uniqueness
+    timestamp = Dates.format(now(), "yyyy-mm-dd_HH-MM-SS")
+    output_dir = "test-results-$(base_name)-$(timestamp)"
+    
+    # Create directory if it doesn't exist
+    if !isdir(output_dir)
+        mkdir(output_dir)
+    end
+    
+    return output_dir
 end
 
 function run_benchmark_with_gui_updates(config::BenchmarkConfig, window)
@@ -984,7 +1005,7 @@ function run_benchmark_with_gui_updates(config::BenchmarkConfig, window)
     return result
 end
 
-function prepare_results_for_js(result::BenchmarkResult, gui_config)
+function prepare_results_for_js(result::BenchmarkResult, gui_config, output_dir::String)
     """Prepare benchmark results for JavaScript display"""
     
     js_results = Dict(
@@ -1004,32 +1025,52 @@ function prepare_results_for_js(result::BenchmarkResult, gui_config)
         "timestamp" => string(result.timestamp)
     )
     
-    # Handle exports if specified
+    # Handle exports in organized directory
     if !isempty(gui_config["output_csv"])
         try
-            export_to_csv(result, gui_config["output_csv"])
-            js_results["csv_file"] = gui_config["output_csv"]
+            csv_path = joinpath(output_dir, gui_config["output_csv"])
+            export_to_csv(result, csv_path)
+            js_results["csv_file"] = csv_path
         catch e
             println("CSV export failed: $e")
+        end
+    else
+        # Always create a default CSV export
+        try
+            default_csv = joinpath(output_dir, "benchmark_results.csv")
+            export_to_csv(result, default_csv)
+            js_results["csv_file"] = default_csv
+        catch e
+            println("Default CSV export failed: $e")
         end
     end
     
     if !isempty(gui_config["output_json"])
         try
-            export_to_json(result, gui_config["output_json"])
-            js_results["json_file"] = gui_config["output_json"]
+            json_path = joinpath(output_dir, gui_config["output_json"])
+            export_to_json(result, json_path)
+            js_results["json_file"] = json_path
         catch e
             println("JSON export failed: $e")
         end
+    else
+        # Always create a default JSON export
+        try
+            default_json = joinpath(output_dir, "benchmark_results.json")
+            export_to_json(result, default_json)
+            js_results["json_file"] = default_json
+        catch e
+            println("Default JSON export failed: $e")
+        end
     end
     
-    # Handle plots if specified
+    # Handle plots in organized directory
     if gui_config["generate_plots"]
         try
-            create_performance_plots(result, gui_config["plot_dir"])
+            plot_dir = joinpath(output_dir, gui_config["plot_dir"])
+            create_performance_plots(result, plot_dir)
             
             # List generated plots
-            plot_dir = gui_config["plot_dir"]
             plots = []
             
             plot_files = [

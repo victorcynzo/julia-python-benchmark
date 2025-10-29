@@ -229,6 +229,34 @@ julia benchmark.jl example_python_script.py
 julia benchmark.jl script.py --iterations 20 --warmup 5
 ```
 
+### Organized Output Directories
+
+**Automatic Organization (New in v1.0.0)**
+
+All output files are automatically organized into timestamped directories:
+```
+test-results-{script_name}-{timestamp}/
+├── benchmark_results.csv      # Always created
+├── benchmark_results.json     # Always created
+├── plots/                     # If --plots specified
+│   ├── time_distribution.png
+│   ├── time_series.png
+│   └── quartiles.png
+└── comparison.png             # If --baseline specified
+```
+
+**Example Output Structure**
+```bash
+julia portable_cli.jl my_algorithm.py --plots
+# Creates: test-results-my_algorithm-2025-10-29_10-30-15/
+```
+
+**Benefits:**
+- ✅ **No file conflicts** - Each run gets its own directory
+- ✅ **Easy organization** - Results grouped by script and timestamp
+- ✅ **Automatic exports** - CSV and JSON always generated
+- ✅ **Clean workspace** - No clutter in main directory
+
 ### Advanced Usage Examples
 
 **Complete Performance Analysis**
@@ -283,10 +311,33 @@ julia benchmark.jl memory_heavy_script.py \
 
 ## Output Files & Examples
 
+### Organized Output Structure (v1.0.0+)
+
+All benchmark results are automatically organized into timestamped directories:
+
+```
+test-results-{python_file_name}-{timestamp}/
+├── benchmark_results.csv          # Detailed run data (always created)
+├── benchmark_results.json         # Complete results (always created)
+├── plots/                          # Performance visualizations (if --plots)
+│   ├── time_distribution.png       # Execution time histogram
+│   ├── time_series.png            # Time series plot
+│   └── quartiles.png               # Statistical quartiles
+├── custom_output.csv               # Custom CSV (if --output-csv specified)
+├── custom_output.json              # Custom JSON (if --output-json specified)
+└── comparison.png                  # Baseline comparison (if --baseline used)
+```
+
+**Example Directory Names:**
+- `test-results-my_script-2025-10-29_10-30-15/`
+- `test-results-algorithm_test-2025-10-29_14-22-08/`
+- `test-results-performance_check-2025-10-29_16-45-33/`
+
 ### 1. Console Output
 
 **Standard Benchmark Output:**
 ```
+Created output directory: test-results-example_python_script-2025-10-29_10-30-15
 Starting benchmark of example_python_script.py
 Iterations: 10, Warmup: 3
 Running warmup...
@@ -333,6 +384,8 @@ STABILITY ANALYSIS:
   Outliers: 0 (0.0%)
   Stability Rating: Excellent
 ============================================================
+Detailed results exported to: test-results-example_python_script-2025-10-29_10-30-15\benchmark_results.csv
+Complete results exported to: test-results-example_python_script-2025-10-29_10-30-15\benchmark_results.json
 ```
 
 **Regression Detection Output:**

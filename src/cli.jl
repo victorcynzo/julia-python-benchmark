@@ -1,4 +1,5 @@
 using ArgParse
+using Dates
 
 function parse_commandline()
     s = ArgParseSettings(description="Python Benchmarking Tool")
@@ -60,8 +61,29 @@ function parse_commandline()
     return parse_args(s)
 end
 
+function create_output_directory(python_file::String)
+    """Create organized output directory based on Python file name"""
+    # Extract filename without extension
+    base_name = splitext(basename(python_file))[1]
+    
+    # Create directory name with timestamp for uniqueness
+    timestamp = Dates.format(now(), "yyyy-mm-dd_HH-MM-SS")
+    output_dir = "test-results-$(base_name)-$(timestamp)"
+    
+    # Create directory if it doesn't exist
+    if !isdir(output_dir)
+        mkdir(output_dir)
+        println("Created output directory: $output_dir")
+    end
+    
+    return output_dir
+end
+
 function main()
     args = parse_commandline()
+    
+    # Create organized output directory
+    output_dir = create_output_directory(args["python_file"])
     
     # Create benchmark configuration
     config = BenchmarkConfig(
@@ -82,18 +104,29 @@ function main()
             print_summary(result)
         end
         
-        # Export results
+        # Export results to organized directory
         if args["output-csv"] !== nothing
-            export_to_csv(result, args["output-csv"])
+            csv_path = joinpath(output_dir, args["output-csv"])
+            export_to_csv(result, csv_path)
+        else
+            # Always create a default CSV export
+            default_csv = joinpath(output_dir, "benchmark_results.csv")
+            export_to_csv(result, default_csv)
         end
         
         if args["output-json"] !== nothing
-            export_to_json(result, args["output-json"])
+            json_path = joinpath(output_dir, args["output-json"])
+            export_to_json(result, json_path)
+        else
+            # Always create a default JSON export
+            default_json = joinpath(output_dir, "benchmark_results.json")
+            export_to_json(result, default_json)
         end
         
-        # Generate plots
+        # Generate plots in organized directory
         if args["plots"]
-            create_performance_plots(result, args["plot-dir"])
+            plot_dir = joinpath(output_dir, args["plot-dir"])
+            create_performance_plots(result, plot_dir)
         end
         
         # Baseline comparison
@@ -125,8 +158,9 @@ function main()
                     println("➡️  No significant change")
                 end
                 
-                # Generate comparison plot
-                compare_results(result, baseline_result, "comparison.png")
+                # Generate comparison plot in output directory
+                comparison_path = joinpath(output_dir, "comparison.png")
+                compare_results(result, baseline_result, comparison_path)
             else
                 println("Warning: Baseline file not found: $(args["baseline"])")
             end
