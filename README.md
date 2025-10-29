@@ -4,7 +4,24 @@ A comprehensive Julia-based benchmarking tool for Python scripts featuring proce
 
 ## Version
 
-**Current Version: v1.0.0 Alpha**
+**Current Version: v1.0.2 Alpha**
+
+### Major Changes (v1.0.2)
+
+**GUI Removal**: This version removes all GUI functionality to focus exclusively on command-line interface usage. The tool now provides:
+
+- **Streamlined CLI-only experience** with no GUI dependencies
+- **Reduced installation complexity** - no Blink.jl or web browser requirements
+- **Faster startup times** without GUI initialization overhead
+- **Better server/headless compatibility** for automated benchmarking workflows
+
+**Windows Executable Note**: If you encounter "This app can't run on your PC" error with .exe files, use these alternatives:
+
+- **Recommended**: Double-click `.bat` files (PythonBenchmarker-CLI.bat)
+- **Alternative**: Double-click `.lnk` shortcut files for a more executable-like experience  
+- **PowerShell**: Right-click `.ps1` files and select "Run with PowerShell"
+
+All methods provide identical functionality.
 
 This is an alpha release of Python Benchmarker, representing the first stable implementation of our comprehensive benchmarking framework. While feature-complete and thoroughly tested, this alpha designation indicates ongoing refinement of the user experience and API stability. The core benchmarking engine, statistical analysis capabilities, and cross-platform compatibility have been validated across multiple environments. Users can expect reliable performance measurements and accurate statistical insights, with continued improvements in upcoming releases based on community feedback and real-world usage patterns.
 
@@ -90,15 +107,14 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
 - ✅ **Performance Plots**: Histograms, time series, box plots, comparison charts
 - ✅ **Data Export**: CSV (raw data) and JSON (complete results) formats
 - ✅ **Baseline Comparison**: Visual and statistical comparison against previous runs
-- ✅ **Command-Line Interface**: Comprehensive CLI with extensive options
+- ✅ **Command-Line Interface**: Comprehensive CLI with extensive options (GUI removed in v1.0.2)
 
 ### Advanced Features
 - ✅ **Configurable Parameters**: Iterations, warmup runs, timeouts
 - ✅ **Python Arguments**: Pass custom arguments to benchmarked scripts
 - ✅ **Batch Processing**: Support for multiple benchmark configurations
 - ✅ **Cross-Platform**: Windows, macOS, and Linux support
-- ✅ **Desktop GUI**: Modern graphical interface with drag-and-drop functionality
-- ✅ **Standalone Executables**: No Julia runtime required for end users
+- ✅ **Standalone Executables**: No Julia runtime required for end users (CLI only)
 
 ## Installation
 
@@ -136,37 +152,12 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
    julia benchmark.jl --help
    ```
 
-### GUI Dependencies (Optional)
-For the graphical user interface:
-
-**Linux/macOS:**
-```bash
-julia --project=. -e "using Pkg; Pkg.add(\"Blink\")"
-```
-
-**Windows (PowerShell):**
-Due to PowerShell escaping issues, use a Julia script:
-```bash
-# Create temporary script
-echo 'using Pkg; Pkg.add("Blink")' > install_blink.jl
-julia --project=. install_blink.jl
-del install_blink.jl
-```
-
-**Alternative (All Platforms):**
-```julia
-julia --project=.
-# In Julia REPL:
-using Pkg
-Pkg.add("Blink")
-```
-
 ### Alternative: Manual Dependency Installation
 If automatic installation fails:
 ```julia
 julia --project=.
 using Pkg
-Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "Statistics", "StatsBase", "Dates", "Blink", "PlotlyJS"])
+Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "Statistics", "StatsBase", "Dates", "PlotlyJS"])
 ```
 
 ### Installation Troubleshooting
@@ -190,9 +181,9 @@ Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "S
    - **Error**: `invalid escape sequence` when running Julia commands with quotes
    - **Solution**: Use Julia script files instead of inline commands, or use the Julia REPL directly
 
-5. **GUI Dependencies Fail**
-   - The tool works in CLI mode even if Blink.jl fails to install
-   - GUI functionality will be automatically disabled with a warning message
+5. **Missing Plot Dependencies**
+   - The tool works without plotting libraries but won't generate visualizations
+   - Install PlotlyJS.jl for full plotting functionality
 
 6. **Module Loading Issues**
    ```bash
@@ -201,21 +192,6 @@ Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "S
    ```
 
 ## Usage Guide
-
-### GUI Application (Recommended)
-
-**Launch GUI**
-```bash
-julia gui_launcher.jl
-```
-
-The GUI provides:
-- **Drag-and-drop** Python file selection
-- **Interactive configuration** of all benchmark parameters
-- **Real-time progress** updates and logging
-- **Integrated results** display with statistics and plots
-- **Export functionality** for CSV, JSON, and plot files
-- **Baseline comparison** with visual regression analysis
 
 ### Command Line Interface
 
@@ -621,6 +597,7 @@ PythonBenchmarker-GUI.exe
 - Command-line argument parsing
 - Configuration management
 - Main execution flow coordination
+- Primary user interface (GUI removed in v1.0.2)
 
 ### Data Flow Architecture
 

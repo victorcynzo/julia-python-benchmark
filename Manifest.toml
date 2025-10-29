@@ -2,7 +2,7 @@
 
 julia_version = "1.12.1"
 manifest_format = "2.0"
-project_hash = "5da4c64995cba0a3f9ef2242d5d43eeeabcba232"
+project_hash = "3295369a87696415f1858eed0c1db9581121eb3a"
 
 [[deps.AliasTables]]
 deps = ["PtrArrays", "Random"]
@@ -859,7 +859,7 @@ uuid = "43287f4e-b6f4-7ad1-bb20-aadabca52c3d"
 version = "1.3.0"
 
 [[deps.PythonBenchmarker]]
-deps = ["ArgParse", "BenchmarkTools", "Blink", "CSV", "DataFrames", "Dates", "JSON3", "PlotlyJS", "Plots", "Statistics", "StatsBase"]
+deps = ["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "Dates", "JSON3", "PackageCompiler", "PlotlyJS", "Plots", "Statistics", "StatsBase"]
 path = "."
 uuid = "12345678-1234-1234-1234-123456789abc"
 version = "0.1.0"

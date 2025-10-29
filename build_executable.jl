@@ -2,7 +2,7 @@
 
 """
 Build script for creating standalone executables of Python Benchmarker
-Supports both CLI and GUI versions
+CLI version only
 """
 
 using Pkg
@@ -29,38 +29,20 @@ end
 println("📦 Installing project dependencies...")
 Pkg.instantiate()
 
-# Check for GUI dependencies
-global gui_available = false
-try
-    using Blink
-    global gui_available = true
-    println("✅ GUI dependencies available")
-catch
-    println("⚠️  GUI dependencies not available. Installing Blink.jl...")
-    try
-        Pkg.add("Blink")
-        using Blink
-        global gui_available = true
-        println("✅ Blink.jl installed successfully")
-    catch e
-        println("❌ Failed to install Blink.jl: $e")
-        println("   GUI version will not be available")
-    end
-end
-
 # Build options
 build_cli = true
-build_gui = gui_available
 
 println("\n🏗️  Build Configuration:")
-println("   CLI Version: $(build_cli ? "✅" : "❌")")
-println("   GUI Version: $(build_gui ? "✅" : "❌")")
+println("   CLI Version: ✅")
+println("   GUI Version: ❌ (Removed)")
 
 # Create build directory
 build_dir = "build"
 if !isdir(build_dir)
     mkdir(build_dir)
     println("📁 Created build directory: $build_dir")
+else
+    println("📁 Using existing build directory: $build_dir")
 end
 
 # Build CLI version
@@ -73,7 +55,6 @@ if build_cli
             ".",
             cli_app_dir,
             executables = ["benchmark" => "benchmark.jl"],
-            precompile_execution_file = "precompile_test.jl",
             force = true,
             include_lazy_artifacts = true
         )
@@ -104,46 +85,7 @@ if build_cli
     end
 end
 
-# Build GUI version
-if build_gui
-    println("\n🔨 Building GUI executable...")
-    try
-        gui_app_dir = joinpath(build_dir, "PythonBenchmarker-GUI")
-        
-        create_app(
-            ".",
-            gui_app_dir,
-            executables = ["benchmark-gui" => "gui_launcher.jl"],
-            precompile_execution_file = "precompile_test.jl",
-            force = true,
-            include_lazy_artifacts = true
-        )
-        
-        println("✅ GUI executable built successfully!")
-        println("   Location: $gui_app_dir")
-        
-        # Create wrapper scripts for different platforms
-        if Sys.iswindows()
-            exe_path = joinpath(gui_app_dir, "bin", "benchmark-gui.exe")
-            wrapper_path = joinpath(build_dir, "PythonBenchmarker-GUI.exe")
-            if isfile(exe_path)
-                cp(exe_path, wrapper_path, force=true)
-                println("   Windows executable: $wrapper_path")
-            end
-        else
-            exe_path = joinpath(gui_app_dir, "bin", "benchmark-gui")
-            wrapper_path = joinpath(build_dir, "PythonBenchmarker-GUI")
-            if isfile(exe_path)
-                cp(exe_path, wrapper_path, force=true)
-                run(`chmod +x $wrapper_path`)
-                println("   Unix executable: $wrapper_path")
-            end
-        end
-        
-    catch e
-        println("❌ GUI build failed: $e")
-    end
-end
+# GUI version removed as requested
 
 # Create distribution package
 println("\n📦 Creating distribution package...")
@@ -188,14 +130,6 @@ FILES:
             end
         end
         
-        if build_gui
-            if Sys.iswindows()
-                write(f, "- PythonBenchmarker-GUI.exe    : Graphical user interface version\n")
-            else
-                write(f, "- PythonBenchmarker-GUI        : Graphical user interface version\n")
-            end
-        end
-        
         write(f, """
 - example_python_script.py     : Example Python script for testing
 - README.md                    : Complete documentation
@@ -221,21 +155,7 @@ Command Line Interface:
             end
         end
         
-        if build_gui
-            write(f, """
-Graphical User Interface:
-""")
-            if Sys.iswindows()
-                write(f, """
-  Double-click PythonBenchmarker-GUI.exe
-  Or run from command line: PythonBenchmarker-GUI.exe
-""")
-            else
-                write(f, """
-  ./PythonBenchmarker-GUI
-""")
-            end
-        end
+
         
         write(f, """
 
@@ -272,14 +192,7 @@ if build_cli
     end
 end
 
-if build_gui
-    gui_exe = Sys.iswindows() ? "PythonBenchmarker-GUI.exe" : "PythonBenchmarker-GUI"
-    gui_path = joinpath(build_dir, gui_exe)
-    if isfile(gui_path)
-        println("✅ GUI Executable: $gui_path")
-        println("   Usage: Double-click or run from terminal")
-    end
-end
+
 
 dist_path = joinpath(build_dir, "PythonBenchmarker-Distribution")
 if isdir(dist_path)
