@@ -144,3 +144,23 @@ I've successfully cleaned up all the unnecessary files and directories from the 
 - Git configuration (`.git/`, `.gitignore`)
 
 The repository is now clean and ready for GitHub with only the essential files needed for the PythonBenchmarker project. All temporary build artifacts, test outputs, and backup directories have been removed.
+
+---
+
+USER INPUT #3:
+Can you also update the README.md file to include the current version to the correct current version and add a Major Changes (v1.0.3) paragraph to the file?
+
+KIRO OUTPUT #3:
+I've successfully updated the README.md file with the following changes:
+
+**VERSION UPDATE:**
+- Changed "Current Version: v1.0.2 Alpha" to "Current Version: v1.0.3 Alpha"
+
+**ADDED MAJOR CHANGES (v1.0.3) SECTION:**
+- Added comprehensive section describing the new Auto-Update System
+- Included key features: simple update command, automatic backup system, interactive confirmation, dependency management, safe update process, and cross-platform support
+- Added usage examples showing both `julia benchmark.jl --update` and `julia portable_cli.jl --update`
+- Explained the safety features and user experience improvements
+- Positioned the new section above the existing v1.0.2 changes to maintain chronological order
+
+The README.md now accurately reflects the current version (v1.0.3) and properly documents the major new auto-update functionality that was implemented in this release. The documentation provides users with clear information about how to use the new update feature and emphasizes the safety measures built into the system.

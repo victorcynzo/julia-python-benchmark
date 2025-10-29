@@ -4,7 +4,29 @@ A comprehensive Julia-based benchmarking tool for Python scripts featuring proce
 
 ## Version
 
-**Current Version: v1.0.2 Alpha**
+**Current Version: v1.0.3 Alpha**
+
+### Major Changes (v1.0.3)
+
+**Auto-Update System (v1.0.3)**: This version introduces a comprehensive built-in update system that allows users to easily update their PythonBenchmarker installation:
+
+- **Simple Update Command**: Use `--update` flag to check for and install updates automatically
+- **Automatic Backup System**: Creates timestamped backups before updating to ensure safe rollback
+- **Interactive Confirmation**: Prompts user before proceeding with potentially disruptive updates
+- **Dependency Management**: Automatically resolves and updates all project dependencies
+- **Safe Update Process**: Comprehensive error handling with detailed rollback instructions
+- **Cross-Platform Support**: Works seamlessly on Windows, macOS, and Linux systems
+
+**Usage:**
+```bash
+# Update to latest version
+julia benchmark.jl --update
+
+# Or using portable CLI
+julia portable_cli.jl --update
+```
+
+The update system handles self-updating gracefully by creating comprehensive backups before making any changes, ensuring users can always rollback if needed. This feature significantly improves the user experience by eliminating the need for manual updates while maintaining safety through automatic backup creation.
 
 ### Major Changes (v1.0.2)
 
