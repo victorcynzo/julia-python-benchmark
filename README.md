@@ -2,6 +2,12 @@
 
 A comprehensive Julia-based benchmarking tool for Python scripts featuring process isolation, statistical analysis, memory profiling, and performance visualization.
 
+## Version
+
+**Current Version: v1.0.0 Alpha**
+
+This is an alpha release of Python Benchmarker, representing the first stable implementation of our comprehensive benchmarking framework. While feature-complete and thoroughly tested, this alpha designation indicates ongoing refinement of the user experience and API stability. The core benchmarking engine, statistical analysis capabilities, and cross-platform compatibility have been validated across multiple environments. Users can expect reliable performance measurements and accurate statistical insights, with continued improvements in upcoming releases based on community feedback and real-world usage patterns.
+
 ## Table of Contents
 - [How It Works](#how-it-works)
 - [Features](#features)
