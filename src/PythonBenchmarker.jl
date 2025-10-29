@@ -11,12 +11,12 @@ using StatsBase
 using Dates
 
 # Try to load Blink for GUI functionality
-try
+const GUI_AVAILABLE = try
     using Blink
-    const GUI_AVAILABLE = true
+    true
 catch
-    const GUI_AVAILABLE = false
     println("Note: Blink.jl not available. GUI functionality disabled.")
+    false
 end
 
 include("benchmark_runner.jl")

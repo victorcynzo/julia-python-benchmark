@@ -108,7 +108,7 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
 
 2. **Clone the Repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/victorcynzo/julia-python-benchmark
    cd julia-python-benchmarker
    ```
 
