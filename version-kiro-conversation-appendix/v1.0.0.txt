@@ -408,8 +408,9 @@ julia -e "using Pkg; Pkg.instantiate()"
 
 The precompilation error should be resolved, and you can proceed with using the benchmarking tool or building the executable.
 
-This fix maintains all the original functionality while ensuring Julia can properly compile the module. The GUI will still be conditionally available based on whether Blink.jl is installed, but now without syntax errors.USER 
-INPUT 8:
+This fix maintains all the original functionality while ensuring Julia can properly compile the module. The GUI will still be conditionally available based on whether Blink.jl is installed, but now without syntax errors.
+
+USER INPUT 8:
 Can you see the error in the terminal when running "julia --project=. -e "using Pkg; Pkg.instantiate()"" ? Could you fix this issue, update the README.md file and update the v1.0.0.txt file, and other necceseary files?
 
 KIRO OUTPUT 8:
@@ -462,8 +463,9 @@ After fixes, the module now:
 - Added verification steps for successful installation
 - Included guidance for GUI dependency issues
 
-The Julia module is now fully functional and ready for use or executable compilation. All syntax errors have been resolved while maintaining complete feature compatibility.USER
- INPUT 9:
+The Julia module is now fully functional and ready for use or executable compilation. All syntax errors have been resolved while maintaining complete feature compatibility.
+
+USER INPUT 9:
 Running julia --project=. -e "using Pkg; Pkg.add(\"Blink\")" gives me an error? Could you fix this and update the README accordingly with this new conversation part
 
 KIRO OUTPUT 9:
@@ -513,8 +515,8 @@ After resolving the command line issue:
 - Guidance on using Julia script files vs inline commands on Windows
 
 The installation process is now more robust across different platforms, with specific guidance for Windows users who encounter PowerShell escaping issues.
-USE
-R INPUT 10:
+
+USER INPUT 10:
 Can you test all of the functions available within the CLI-versionof the code with example_python_script.py? So only test all the CLI applications, do not test any of the GUI functions please. Could you also add this conversation to the conversation file v1.0.0? And afterwards also update the README file with any changes that were neccesary to fix the program?
 
 KIRO OUTPUT 10:
@@ -600,8 +602,9 @@ julia portable_cli.jl example_python_script.py --python-args 25
 - Detailed console output with statistics
 - Quiet mode for automated usage
 
-The CLI version is fully functional with all advertised features working correctly. The fixes ensure compatibility across platforms and provide robust error handling for missing dependencies.USER IN
-PUT 11:
+The CLI version is fully functional with all advertised features working correctly. The fixes ensure compatibility across platforms and provide robust error handling for missing dependencies.
+
+USER INPUT 11:
 Can you change the code so that all created files from running the program (in any version) are output to a newly created folder called test-results + input python file name? And also update the README and add this part of our conversation to the v1.0.0 file of the conversation appendix?
 
 KIRO OUTPUT 11:
