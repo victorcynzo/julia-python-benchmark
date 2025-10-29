@@ -899,3 +899,13 @@ julia portable_cli.jl script.py --plots
 - Monitor system resources during benchmarking
 
 This comprehensive benchmarking tool provides professional-grade performance analysis capabilities with detailed statistical insights and visualization options.
+#
+# License
+
+This project is released under the MIT License. You are free to use, modify, and distribute this software for both personal and commercial purposes. The software is provided "as is" without warranty of any kind.
+
+For the full license text, see the LICENSE file in the project repository.
+
+---
+
+**Python Benchmarker** - Professional performance analysis for Python scripts with statistical insights and cross-platform compatibility.
