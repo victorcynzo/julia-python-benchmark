@@ -700,6 +700,19 @@ build/
     └── USAGE.txt
 ```
 
+### Summary of Build Methods
+
+| Aspect | Executable CLI (`build_executable.jl`) | Wrapper Scripts (`create_executables.jl`) |
+|--------|----------------------------------------|-------------------------------------------|
+| **Julia Required** | ❌ No | ✅ Yes |
+| **File Size** | Large (~100MB+) | Small (~1KB) |
+| **Startup Speed** | Fast | Slower (Julia startup) |
+| **Distribution** | Self-contained | Requires Julia ecosystem |
+| **Modification** | Requires rebuild | Direct source editing |
+| **Best For** | End-user distribution | Development/Julia environments |
+
+**Recommendation:** Use `build_executable.jl` for distributing to end users who don't have Julia installed. Use `create_executables.jl` for environments where Julia is already available and you want lightweight, easily modifiable scripts.
+
 ### Manual Build Process
 
 If you prefer manual control:

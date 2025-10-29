@@ -372,3 +372,88 @@ I've conducted comprehensive testing of all features and everything works perfec
 - All runs successful with proper error handling for failures
 
 The CLI-only version is fully functional with all features working as documented in the README!
+
+USER INPUT #13:
+"What is the difference between the executable CLI method and the 'other' method?"
+
+KIRO OUTPUT #13:
+Based on my examination of the files, I can explain the key differences between the executable CLI method and the other method:
+
+## Executable CLI Method vs Other Methods
+
+### **Executable CLI Method** (from `build_executable.jl`)
+
+**What it creates:**
+- True standalone executables (.exe on Windows, binary on Unix/Linux)
+- Uses PackageCompiler.jl to compile Julia code into native executables
+- Creates completely self-contained applications
+
+**Key characteristics:**
+- **No Julia runtime required** on target machines where you run the executable
+- **Standalone distribution** - all dependencies bundled into the executable
+- **Larger file size** due to bundled Julia runtime and dependencies
+- **Faster startup** after initial compilation (no Julia startup overhead)
+- **True executables** that behave like native applications
+
+**Usage:**
+```bash
+# Windows
+PythonBenchmarker-CLI.exe script.py --iterations 20
+
+# Unix/Linux
+./PythonBenchmarker-CLI script.py --iterations 20
+```
+
+### **"Other" Method** (from `create_executables.jl`)
+
+**What it creates:**
+- Wrapper scripts (.bat files on Windows, shell scripts on Unix)
+- Simple launchers that call Julia with the appropriate project and script
+- Lightweight wrappers around the Julia source code
+
+**Key characteristics:**
+- **Julia runtime required** on target machines
+- **Smaller file size** - just wrapper scripts
+- **Project dependencies** must be available
+- **Julia startup overhead** on each execution
+- **Easier to modify** - source code remains accessible
+
+**Usage:**
+```bash
+# Windows
+PythonBenchmarker-CLI.bat script.py --iterations 20
+
+# Unix/Linux  
+./PythonBenchmarker-CLI script.py --iterations 20
+```
+
+### **Summary of Key Differences:**
+
+| Aspect | Executable CLI | Wrapper Scripts |
+|--------|----------------|-----------------|
+| **Julia Required** | ❌ No | ✅ Yes |
+| **File Size** | Large (~100MB+) | Small (~1KB) |
+| **Startup Speed** | Fast | Slower (Julia startup) |
+| **Distribution** | Self-contained | Requires Julia ecosystem |
+| **Modification** | Requires rebuild | Direct source editing |
+| **Best For** | End-user distribution | Development/Julia environments |
+
+The executable CLI method is ideal when you want to distribute the tool to users who don't have Julia installed, while the wrapper script method is better for environments where Julia is already available and you want lightweight, easily modifiable scripts.
+
+USER INPUT #14:
+"Could you add the summary of key differences of both to the README.md file and add this conversation to v1.0.2?"
+
+KIRO OUTPUT #14:
+I've successfully updated both files:
+
+1. **README.md**: Added a comprehensive comparison table in the "Creating Standalone Executables" section that clearly shows the differences between the two build methods, including file size, Julia requirements, startup speed, and recommended use cases.
+
+2. **v1.0.2.txt**: Appended this conversation with the analysis of the differences between executable CLI and wrapper script methods, including the comparison table and documentation updates made.
+
+The updates provide clear guidance for users to choose the right build method based on their needs - standalone executables for end-user distribution or wrapper scripts for Julia-enabled environments.
+
+USER INPUT #15:
+"Please update the v1.0.2.txt file to have these latest additions to be a similar format as the previous ones with "USER INPUT #(number)" and "KIRO OUTPUT #(number)""
+
+KIRO OUTPUT #15:
+I've updated the v1.0.2.txt file to format the latest conversation entries in the proper numbered format consistent with the previous entries. The conversation about executable CLI vs wrapper scripts clarification is now properly formatted as USER INPUT #13 and KIRO OUTPUT #13, followed by USER INPUT #14 and KIRO OUTPUT #14, maintaining the same style as all previous entries in the file.
