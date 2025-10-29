@@ -299,4 +299,24 @@ You're absolutely right! That instruction was vague and unhelpful. I've now repl
 - Simple alternative that often fixes PowerShell escaping issues
 - Shows the exact syntax to use
 
-Now users have three clear, specific methods to work around PowerShell command line issues, with complete examples they can copy and paste.
+Now users have three clear, specific methods to work around PowerShell command line issues, with complete examples they can copy and paste.-
+--
+
+USER INPUT #11:
+"In the README.md file under "Method 1: Create a temporary Julia script file" it says "install_deps.jl", doesn't that mean that the deps.jl file should be included somewhere or am I mistaken?"
+
+KIRO OUTPUT #11:
+Great question! You're not mistaken to be confused - my explanation wasn't clear enough. The `install_deps.jl` (now renamed to `temp_install.jl`) is NOT a file that should be included in the repository. 
+
+**CLARIFIED THE INSTRUCTIONS:**
+- Changed the filename to `temp_install.jl` to make it clearer it's temporary
+- Added step-by-step comments explaining what each command does
+- Added a note explaining that the `echo` command creates the file for you
+- Made it clear this is a temporary file that gets created and deleted during the process
+
+**HOW IT WORKS:**
+1. `echo 'using Pkg; Pkg.add("PlotlyJS")' > temp_install.jl` - Creates a new file with Julia code
+2. `julia --project=. temp_install.jl` - Runs that file
+3. `del temp_install.jl` - Deletes the temporary file
+
+This is a workaround for PowerShell escaping issues - instead of trying to pass complex commands with quotes inline, you create a temporary script file, run it, then delete it. No files need to be included in the repository.

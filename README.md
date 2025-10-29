@@ -239,11 +239,15 @@ Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "S
    **Method 1: Create a temporary Julia script file**
    ```powershell
    # Instead of: julia -e "using Pkg; Pkg.add(\"PlotlyJS\")"
-   # Create a script file:
-   echo 'using Pkg; Pkg.add("PlotlyJS")' > install_deps.jl
-   julia --project=. install_deps.jl
-   del install_deps.jl
+   # Create a temporary script file (this creates the file for you):
+   echo 'using Pkg; Pkg.add("PlotlyJS")' > temp_install.jl
+   # Run the script:
+   julia --project=. temp_install.jl
+   # Clean up the temporary file:
+   del temp_install.jl
    ```
+   
+   **Note:** The `temp_install.jl` file doesn't need to exist beforehand - the `echo` command creates it for you with the Julia code inside.
    
    **Method 2: Use the Julia REPL directly**
    ```powershell
