@@ -45,7 +45,7 @@ This is an alpha release of Python Benchmarker, representing the first stable im
 - [Installation](#installation)
 - [Usage Guide](#usage-guide)
 - [Output Files & Examples](#output-files--examples)
-- [Creating Executables](#creating-executables)
+- [Creating Standalone Executables](#creating-standalone-executables)
 - [Architecture](#architecture)
 - [Troubleshooting](#troubleshooting)
 
@@ -104,7 +104,7 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
 - ✅ **Stability Metrics**: Coefficient of variation and consistency analysis
 
 ### Visualization & Export
-- ✅ **Performance Plots**: Histograms, time series, box plots, comparison charts
+- ✅ **Performance Plots**: Histograms, time series, quartile plots, comparison charts
 - ✅ **Data Export**: CSV (raw data) and JSON (complete results) formats
 - ✅ **Baseline Comparison**: Visual and statistical comparison against previous runs
 - ✅ **Command-Line Interface**: Comprehensive CLI with extensive options (GUI removed in v1.0.2)
@@ -205,23 +205,7 @@ If you need to run the benchmarker without modifying system Julia packages:
 
 #### Method 3: Standalone Executable (Advanced)
 
-Create a standalone executable that doesn't require Julia installation on target machines:
-
-1. **Build Executable**
-   ```bash
-   julia create_executables.jl
-   ```
-
-2. **Use Built Executable**
-   ```bash
-   # Windows
-   cd build
-   .\PythonBenchmarker-CLI.bat script.py --iterations 10
-   
-   # Unix/Linux/macOS
-   cd build
-   ./PythonBenchmarker-CLI script.py --iterations 10
-   ```
+For creating executables that don't require Julia installation on target machines, see the [Creating Standalone Executables](#creating-standalone-executables) section below.
 
 ### Alternative: Manual Dependency Installation
 If automatic installation fails:
@@ -250,7 +234,31 @@ Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "S
 
 4. **Windows PowerShell Command Line Issues**
    - **Error**: `invalid escape sequence` when running Julia commands with quotes
-   - **Solution**: Use Julia script files instead of inline commands, or use the Julia REPL directly
+   - **Solutions**:
+   
+   **Method 1: Create a temporary Julia script file**
+   ```powershell
+   # Instead of: julia -e "using Pkg; Pkg.add(\"PlotlyJS\")"
+   # Create a script file:
+   echo 'using Pkg; Pkg.add("PlotlyJS")' > install_deps.jl
+   julia --project=. install_deps.jl
+   del install_deps.jl
+   ```
+   
+   **Method 2: Use the Julia REPL directly**
+   ```powershell
+   # Start Julia REPL
+   julia --project=.
+   # Then in the Julia REPL, type:
+   # using Pkg
+   # Pkg.add("PlotlyJS")
+   # exit()
+   ```
+   
+   **Method 3: Use single quotes instead of double quotes**
+   ```powershell
+   julia --project=. -e 'using Pkg; Pkg.add("PlotlyJS")'
+   ```
 
 5. **Missing Plot Dependencies**
    - The tool works without plotting libraries but won't generate visualizations
@@ -602,7 +610,7 @@ run_number,execution_time,memory_usage
 **Generated Plot Files:**
 - `plots/time_distribution.png` - Histogram of execution times
 - `plots/time_series.png` - Time series plot with mean line
-- `plots/box_plot.png` - Box plot showing quartiles and outliers
+- `plots/quartiles.png` - Quartile visualization (or `box_plot.png` if StatsPlots available)
 - `plots/memory_usage.png` - Memory usage over time (if available)
 - `comparison.png` - Baseline comparison (if `--baseline` used)
 
@@ -619,10 +627,11 @@ run_number,execution_time,memory_usage
 - Includes mean line for reference
 - Reveals trends and stability over runs
 
-**Box Plot:**
+**Quartile Plot:**
 - Shows median, quartiles, and outliers
 - Identifies statistical distribution characteristics
 - Highlights performance consistency
+- Uses box plot if StatsPlots available, otherwise scatter plot with error bars
 
 **Memory Usage Plot:**
 - X-axis: Run number
@@ -646,13 +655,27 @@ Statistical significance: Yes (t-statistic: 3.45)
 
 ### Automated Build Process (Recommended)
 
-The project includes a comprehensive build script that creates standalone executables for the CLI version:
+The project includes two build scripts for creating executables:
 
+**Important:** Both build processes require Julia to be installed on the BUILD machine where you run these commands.
+
+**Option 1: True Standalone Executables (Recommended)**
 ```bash
 julia build_executable.jl
 ```
+- **Build requirement:** Julia must be installed on the machine where you run this command
+- **Runtime requirement:** The resulting executables do NOT require Julia on target machines
+- Creates true standalone executables using PackageCompiler.jl
 
-This script will:
+**Option 2: Wrapper Scripts**
+```bash
+julia create_executables.jl
+```
+- **Build requirement:** Julia must be installed on the machine where you run this command  
+- **Runtime requirement:** The resulting scripts DO require Julia on target machines
+- Creates wrapper scripts (.bat files on Windows, shell scripts on Unix)
+
+**build_executable.jl will:**
 1. **Install all dependencies** including PackageCompiler.jl
 2. **Build CLI executable** for command-line usage
 3. **Create distribution package** with all files and documentation
@@ -696,15 +719,22 @@ create_app(".", "PythonBenchmarker-CLI",
 
 ### Distribution
 
+**For True Standalone Executables (from build_executable.jl):**
 The executables in the `PythonBenchmarker-Distribution` folder are completely standalone:
 - **No Julia installation required** on target machines
 - **No dependency management** needed
 - **Cross-platform compatible** (build on target OS)
 - **Self-contained** with all required libraries
 
+**For Wrapper Scripts (from create_executables.jl):**
+The scripts in the distribution folder require:
+- **Julia must be installed** on target machines
+- **Project dependencies** must be available
+- **Suitable for environments** where Julia is already installed
+
 ### Usage of Compiled Executables
 
-**CLI Version:**
+**True Standalone Executables (from build_executable.jl):**
 ```bash
 # Windows
 PythonBenchmarker-CLI.exe script.py --iterations 20
@@ -713,7 +743,18 @@ PythonBenchmarker-CLI.exe script.py --iterations 20
 ./PythonBenchmarker-CLI script.py --iterations 20
 ```
 
-**Note:** GUI version has been removed in v1.0.2 for streamlined CLI-only experience.
+**Wrapper Scripts (from create_executables.jl):**
+```bash
+# Windows
+PythonBenchmarker-CLI.bat script.py --iterations 20
+
+# Unix/Linux/macOS
+./PythonBenchmarker-CLI script.py --iterations 20
+```
+
+**Key Difference:** 
+- **True standalone executables** (.exe files from build_executable.jl) don't require Julia on target machines
+- **Wrapper scripts** (.bat/.sh files from create_executables.jl) require Julia to be installed on target machines
 
 ## Architecture
 

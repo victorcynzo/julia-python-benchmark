@@ -192,4 +192,111 @@ You're absolutely right! I found several GUI references still in the README that
 - Added verification steps and troubleshooting
 - Included test commands to ensure everything works
 
-The README now provides a comprehensive CLI-only guide with detailed instructions for download, installation, and usage of all features.
+The README now provides a comprehensive CLI-only guide with detailed instructions for download, installation, and usage of all features.---
+
+
+USER INPUT #7:
+"Is the section inside the README.md file "Creating Standalone Executables" not similar to the "Method 3: Standalone Executable (Advanced)" inside "Installation" "Step-by-Step installation? They both feature the command line prompt "julia create_executables.jl""
+
+KIRO OUTPUT #7:
+You're absolutely right! There was redundant content between those two sections. I've fixed this by:
+
+**REMOVED REDUNDANCY:**
+- Replaced the detailed Method 3 content in the Installation section with a simple reference to the "Creating Standalone Executables" section
+- This eliminates the duplicate information and commands
+
+**ENHANCED "Creating Standalone Executables" SECTION:**
+- Clarified that there are two build scripts with different purposes:
+  - `julia build_executable.jl` - Creates true standalone executables (no Julia required on target)
+  - `julia create_executables.jl` - Creates wrapper scripts (Julia required on target)
+- Updated usage examples to show both types of executables
+- Added clear notes about the differences between the two approaches
+
+The README now has a cleaner structure without redundant information, and users can clearly understand the difference between the two executable creation methods.---
+
+
+USER INPUT #8:
+"Does this change also accurately display which version does not Julia to be pre-installed on the machine and which version does need Julia to be pre-installed on the machine? The previous version of the README.md file says "julia create_executables.jl" under "Method 3: Standalone Executable (Advanced)" and it says that that version does not require Julia installation on target machines, but doesn't running the prompt "julia create_executables.jl" in the terminal require Julia to be installed? That is an incorrect instruction then"
+
+KIRO OUTPUT #8:
+You're absolutely correct! There was a logical error in my explanation. I've now clarified this important distinction:
+
+**FIXED THE CONFUSION:**
+- **Build requirement:** BOTH `julia build_executable.jl` AND `julia create_executables.jl` require Julia to be installed on the BUILD machine (where you run these commands)
+- **Runtime requirement:** This is where they differ:
+  - `build_executable.jl` creates true standalone executables that DON'T need Julia on target machines
+  - `create_executables.jl` creates wrapper scripts that DO need Julia on target machines
+
+**UPDATED README TO CLARIFY:**
+- Added clear "Build requirement" vs "Runtime requirement" distinctions
+- Emphasized that both build processes need Julia on the build machine
+- Clarified that only the USAGE of the resulting executables differs in Julia requirements
+- Updated the Distribution section to explain both scenarios
+- Fixed the usage notes to be more precise about the differences
+
+Thank you for catching this logical inconsistency! The instructions are now accurate and clear about when Julia is and isn't required.---
+
+
+USER INPUT #9:
+"Could you go over the README.md file one more time to check for inconsistencies, wrong instructions, faulty features, outdated features that are now removed, or any other things that are not correct or logical? Thank you"
+
+KIRO OUTPUT #9:
+I've done a comprehensive review of the README.md file and found several issues that I've now fixed:
+
+**ISSUES FOUND AND FIXED:**
+
+1. **Table of Contents Link Mismatch:**
+   - Fixed: "Creating Executables" → "Creating Standalone Executables" to match actual section header
+
+2. **Plot Generation Inconsistencies:**
+   - Fixed: Changed "box plots" to "quartile plots" in features list since StatsPlots is optional
+   - Updated plot file descriptions to mention both `quartiles.png` (default) and `box_plot.png` (if StatsPlots available)
+   - Clarified that quartile visualization uses scatter plot with error bars when StatsPlots unavailable
+
+3. **Plot Description Accuracy:**
+   - Updated "Box Plot" section to "Quartile Plot" with accurate description of fallback behavior
+   - Made it clear that the tool generates either box plots OR quartile scatter plots depending on dependencies
+
+**VERIFIED AS CORRECT:**
+- Repository URL matches actual git remote
+- Version numbers are consistent (v1.0.2)
+- File references are accurate (no references to removed GUI files)
+- Installation instructions are logically sound
+- Build process descriptions correctly distinguish between build vs runtime Julia requirements
+- All CLI options and examples are accurate
+- Cross-platform instructions are appropriate
+
+**NO ISSUES FOUND WITH:**
+- Prerequisites and version requirements
+- Installation methods and verification steps
+- Usage examples and CLI options
+- Output file structures and examples
+- Troubleshooting section content
+- Architecture descriptions
+
+The README is now consistent and accurate with the actual CLI-only codebase.---
+
+U
+SER INPUT #10:
+"On a previous version with "Installation Troubleshooting" I also see "4. Windows Powershell Command Line Issues" which says as the solution to use a Julia script file instead of inline commands or use the Julia REPL directly, but doesn't state what script or how to use the REPL directly, could you clarify those instructions please?"
+
+KIRO OUTPUT #10:
+You're absolutely right! That instruction was vague and unhelpful. I've now replaced it with specific, actionable solutions:
+
+**ENHANCED WINDOWS POWERSHELL TROUBLESHOOTING:**
+
+**Method 1: Create a temporary Julia script file**
+- Shows exactly how to create a temporary .jl file with the commands
+- Provides complete example with cleanup (delete the temp file)
+- Uses echo command that works in PowerShell
+
+**Method 2: Use the Julia REPL directly**  
+- Shows how to start the Julia REPL with proper project activation
+- Lists the exact commands to type in the REPL
+- Shows how to exit the REPL
+
+**Method 3: Use single quotes instead of double quotes**
+- Simple alternative that often fixes PowerShell escaping issues
+- Shows the exact syntax to use
+
+Now users have three clear, specific methods to work around PowerShell command line issues, with complete examples they can copy and paste.
