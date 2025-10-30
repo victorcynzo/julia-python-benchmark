@@ -102,6 +102,31 @@ The update system handles self-updating gracefully by creating comprehensive bac
 
 All methods provide identical functionality.
 
+### Major Changes (v1.0.1)
+
+**GUI Window Display Fix (v1.0.1)**: This version resolved critical GUI visibility issues and improved the build system:
+
+- **GUI Window Visibility**: Fixed Blink.jl window creation to properly display GUI interface
+- **Window Focus Enhancement**: Added automatic window focusing to bring GUI to foreground
+- **Build System Improvements**: Enhanced executable creation process with multiple Windows-compatible formats
+- **Windows Compatibility**: Resolved "This app can't run on your PC" errors with proper executable alternatives
+- **Multiple Execution Methods**: Provided batch files (.bat), Windows shortcuts (.lnk), and PowerShell scripts (.ps1)
+- **Enhanced Documentation**: Added comprehensive Windows execution guide and troubleshooting instructions
+
+**Key Fixes:**
+- Changed GUI window creation from "show" => false to "show" => true
+- Added JavaScript window.focus() for proper window display
+- Replaced problematic .exe files with reliable .bat alternatives
+- Created Windows shortcuts for executable-like user experience
+- Enhanced build directory structure with multiple execution options
+
+**Windows Execution Options:**
+- **Primary**: Double-click `.bat` files (most reliable)
+- **Alternative**: Double-click `.lnk` shortcut files (executable-like experience)
+- **PowerShell**: Right-click `.ps1` files and select "Run with PowerShell"
+
+This version ensures the GUI works properly with both direct launcher and built executables while providing multiple reliable execution methods for Windows users.
+
 This is an alpha release of Python Benchmarker, representing the first stable implementation of our comprehensive benchmarking framework. While feature-complete and thoroughly tested, this alpha designation indicates ongoing refinement of the user experience and API stability. The core benchmarking engine, statistical analysis capabilities, and cross-platform compatibility have been validated across multiple environments. Users can expect reliable performance measurements and accurate statistical insights, with continued improvements in upcoming releases based on community feedback and real-world usage patterns.
 
 ### Recent Fixes and Improvements (v1.0.0)

@@ -671,4 +671,49 @@ The conversation has been successfully added to the v1.0.4.txt file, including:
 ✅ **KIRO OUTPUT #13**: My analysis and fixes for the command parsing issues
 ✅ **USER INPUT #14**: Your current request to add this conversation to the log
 
-The v1.0.4.txt file now contains the complete development log for version 1.0.4, including all feature implementations, testing procedures, bug fixes, and documentation improvements made during this session. This maintains the comprehensive record of the entire development process for this version.
+The v1.0.4.txt file now contains the complete development log for version 1.0.4, including all feature implementations, testing procedures, bug fixes, and documentation improvements made during this session. This maintains the comprehensive record of the entire development process for this version.US
+ER INPUT #15:
+Can you update the README.md file so it also uncludes "Major Changes (v.1.0.1)"? You can find these changes in file v1.0.1.txt? Afterwards, could you add this part of our conversation to the file v1.0.4.txt?
+
+KIRO OUTPUT #15:
+I'll first read the v1.0.1.txt file to understand what changes were made in that version, then update the README.md file to include them.
+
+After reading the v1.0.1.txt file, I found that version 1.0.1 focused on GUI fixes and Windows executable compatibility issues. I've successfully added the Major Changes (v1.0.1) section to the README.md file.
+
+### CHANGES IMPLEMENTED:
+
+**1. Added Major Changes (v1.0.1) Section to README:**
+
+I inserted the v1.0.1 section between v1.0.2 and v1.0.0 in chronological order, including:
+
+**GUI Window Display Fix (v1.0.1)** features:
+- **GUI Window Visibility**: Fixed Blink.jl window creation to properly display GUI interface
+- **Window Focus Enhancement**: Added automatic window focusing to bring GUI to foreground
+- **Build System Improvements**: Enhanced executable creation process with multiple Windows-compatible formats
+- **Windows Compatibility**: Resolved "This app can't run on your PC" errors with proper executable alternatives
+- **Multiple Execution Methods**: Provided batch files (.bat), Windows shortcuts (.lnk), and PowerShell scripts (.ps1)
+- **Enhanced Documentation**: Added comprehensive Windows execution guide and troubleshooting instructions
+
+**Key Fixes Listed:**
+- Changed GUI window creation from "show" => false to "show" => true
+- Added JavaScript window.focus() for proper window display
+- Replaced problematic .exe files with reliable .bat alternatives
+- Created Windows shortcuts for executable-like user experience
+- Enhanced build directory structure with multiple execution options
+
+**Windows Execution Options:**
+- **Primary**: Double-click `.bat` files (most reliable)
+- **Alternative**: Double-click `.lnk` shortcut files (executable-like experience)
+- **PowerShell**: Right-click `.ps1` files and select "Run with PowerShell"
+
+**2. Proper Version Chronology:**
+The README now properly documents the version history in chronological order:
+- v1.0.4: Remote Directory Support + Advanced Batch Processing
+- v1.0.3: Auto-Update System
+- v1.0.2: GUI Removal
+- v1.0.1: GUI Window Display Fix (newly added)
+- v1.0.0: Recent Fixes and Improvements
+
+This ensures users understand that v1.0.1 was specifically focused on resolving GUI visibility and Windows executable compatibility issues, which is important context for understanding the evolution to the CLI-only approach in v1.0.2.
+
+The README now comprehensively documents all major version changes, providing users with a complete understanding of the tool's development history and feature evolution.
