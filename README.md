@@ -4,7 +4,43 @@ A comprehensive Julia-based benchmarking tool for Python scripts featuring proce
 
 ## Version
 
-**Current Version: v1.0.3 Alpha**
+**Current Version: v1.0.4 Alpha**
+
+### Major Changes (v1.0.4)
+
+**Advanced Batch Processing System (v1.0.4)**: This version introduces comprehensive batch processing capabilities that allow users to benchmark multiple Python scripts simultaneously with unified analysis and visualization:
+
+- **Multi-Script Benchmarking**: Benchmark multiple scripts in a single command using `--batch-scripts`
+- **Unified Output Analysis**: Combined CSV exports with all script results in one file
+- **Comparative Visualizations**: Multi-line time series plots with color-coded legends for each script
+- **Performance Comparison Charts**: Bar charts, overlapping histograms, and quartile comparisons
+- **Statistical Summary Tables**: Side-by-side performance metrics with automatic fastest/slowest identification
+- **Organized Batch Output**: All results consolidated in timestamped `batch-results-{timestamp}/` directories
+- **Flexible Processing Modes**: Run individual benchmarks or create combined unified outputs
+
+**Key Features:**
+- **Combined CSV Export**: Single file containing all scripts' execution data with separate summary statistics
+- **Multi-Color Plots**: Time series, distributions, and comparison charts with legends
+- **Performance Highlights**: Automatic identification of fastest/slowest scripts with speedup calculations
+- **Comprehensive Statistics**: Mean, median, percentiles, stability ratings for all scripts
+- **Memory Comparison**: Peak memory usage comparison across scripts (when available)
+
+**Usage:**
+```bash
+# Batch processing with combined analysis
+julia benchmark.jl main_script.py \
+    --batch-scripts "script2.py,script3.py,script4.py" \
+    --batch-combine \
+    --iterations 20 \
+    --plots
+
+# Simple batch without combined outputs
+julia benchmark.jl script1.py \
+    --batch-scripts "script2.py,script3.py" \
+    --iterations 10
+```
+
+This feature transforms the benchmarker from a single-script tool into a comprehensive multi-script performance analysis platform, enabling direct comparison and analysis of multiple algorithms or implementations in a single unified workflow.
 
 ### Major Changes (v1.0.3)
 
@@ -134,9 +170,17 @@ Warmup Runs → Benchmark Iterations → Statistical Analysis → Report Generat
 ### Advanced Features
 - ✅ **Configurable Parameters**: Iterations, warmup runs, timeouts
 - ✅ **Python Arguments**: Pass custom arguments to benchmarked scripts
-- ✅ **Batch Processing**: Support for multiple benchmark configurations
+- ✅ **Remote Directory Support**: Benchmark scripts in any directory using `--path` option
 - ✅ **Cross-Platform**: Windows, macOS, and Linux support
 - ✅ **Standalone Executables**: No Julia runtime required for end users (CLI only)
+
+### Batch Processing Features (New in v1.0.4)
+- ✅ **Multi-Script Benchmarking**: Benchmark multiple scripts simultaneously
+- ✅ **Unified Analysis**: Combined CSV/JSON exports with all script results
+- ✅ **Comparative Visualizations**: Multi-line plots with color-coded legends
+- ✅ **Performance Comparison**: Bar charts, distributions, quartile analysis
+- ✅ **Statistical Summaries**: Side-by-side performance metrics and rankings
+- ✅ **Batch Output Organization**: Consolidated results in organized directories
 
 ## Installation
 
@@ -312,12 +356,12 @@ This runs 10 iterations with 3 warmup runs and creates organized output in `test
 
 **2. Basic Customization**
 ```bash
-julia benchmark.jl script.py --iterations 20 --warmup 5
+julia benchmark.jl example_python_script.py --iterations 20 --warmup 5
 ```
 
 **3. With Visualization**
 ```bash
-julia benchmark.jl script.py --plots
+julia benchmark.jl example_python_script.py --plots
 ```
 Generates performance plots in the output directory
 
@@ -334,6 +378,7 @@ julia benchmark.jl <python_file> [OPTIONS]
 - `--timeout, -t`: Timeout per run in seconds (default: 300.0)
 - `--plots`: Generate performance visualization plots
 - `--quiet, -q`: Suppress detailed output
+- `--path, -p`: Working directory path for Python script execution
 
 **Advanced Options:**
 - `--no-memory`: Disable memory tracking (useful for Windows)
@@ -342,12 +387,17 @@ julia benchmark.jl <python_file> [OPTIONS]
 - `--plot-dir DIR`: Custom directory for plots (default: "plots")
 - `--baseline FILE`: Compare against previous results from JSON file
 - `--python-args ARG1 ARG2...`: Pass arguments to the Python script
+- `--path DIR`: Specify working directory for Python script execution (allows benchmarking scripts in different folders without copying them)
+
+**Batch Processing Options:**
+- `--batch-scripts LIST`: Comma-separated list of additional scripts to benchmark
+- `--batch-combine`: Create unified outputs combining all script results (CSV, JSON, plots)
 
 #### Portable CLI Usage
 
 For environments where you can't modify the project directory:
 ```bash
-julia portable_cli.jl script.py [OPTIONS]
+julia portable_cli.jl example_python_script.py [OPTIONS]
 ```
 This script automatically handles project activation and dependencies.
 
@@ -436,13 +486,38 @@ julia benchmark.jl data_processor.py \
     --plots
 ```
 
-#### 6. Batch Processing Multiple Scripts
+#### 6. Batch Processing Multiple Scripts (New in v1.0.4)
+
+**Individual Processing (Original Method):**
 ```bash
-# Benchmark multiple scripts in sequence
+# Benchmark multiple scripts in sequence (separate outputs)
 for script in algorithm1.py algorithm2.py algorithm3.py; do
     julia benchmark.jl $script --iterations 25 --plots --quiet
 done
 ```
+
+**Combined Batch Processing (New Feature):**
+```bash
+# Benchmark multiple scripts with combined analysis
+julia benchmark.jl main_script.py \
+    --batch-scripts "script2.py,script3.py,script4.py" \
+    --batch-combine \
+    --iterations 20 \
+    --plots
+
+# Simple batch without combined analysis
+julia benchmark.jl script1.py \
+    --batch-scripts "script2.py,script3.py" \
+    --iterations 10
+```
+
+**Batch Processing Features:**
+- ✅ **Combined CSV Export**: Single file with all script results
+- ✅ **Summary Statistics**: Comparative analysis across scripts
+- ✅ **Multi-line Plots**: Time series with different colors per script
+- ✅ **Performance Comparison**: Bar charts, distributions, quartiles
+- ✅ **Unified Output Directory**: All results in one organized location
+- ✅ **Performance Highlights**: Fastest/slowest script identification
 
 #### 7. Production Performance Monitoring
 ```bash
@@ -454,7 +529,29 @@ julia benchmark.jl production_script.py \
     --quiet
 ```
 
-#### 8. Cross-Platform Testing
+#### 8. Remote Directory Testing
+```bash
+# Benchmark a Python script in a different directory
+julia benchmark.jl my_script.py \
+    --path "C:\Users\username\Documents\path" \
+    --iterations 20 \
+    --plots
+
+# With Python script arguments (common case)
+julia benchmark.jl my_script.py \
+    --path "C:\Users\username\Documents\path" \
+    --python-args my_video.mp4 output/ \
+    --iterations 5
+
+# Unix/Linux/macOS equivalent
+julia benchmark.jl my_script.py \
+    --path "/home/user/projects/machine-learning" \
+    --python-args input.csv --output results.csv \
+    --iterations 20 \
+    --plots
+```
+
+#### 9. Cross-Platform Testing
 ```bash
 # Windows (PowerShell)
 julia benchmark.jl script.py --iterations 20 --plots
@@ -479,6 +576,9 @@ julia benchmark.jl script.py --iterations 20 --plots
 | `--baseline` | - | String | - | Baseline JSON for comparison |
 | `--python-args` | - | Array | [] | Arguments for Python script |
 | `--quiet` | `-q` | Flag | false | Suppress detailed output |
+| `--path` | `-p` | String | - | Working directory path for Python script execution |
+| `--batch-scripts` | - | String | - | Additional Python scripts for batch processing (comma-separated) |
+| `--batch-combine` | - | Flag | false | Combine batch results into unified outputs |
 
 ## Output Files & Examples
 
@@ -486,6 +586,7 @@ julia benchmark.jl script.py --iterations 20 --plots
 
 All benchmark results are automatically organized into timestamped directories:
 
+**Single Script Mode:**
 ```
 test-results-{python_file_name}-{timestamp}/
 ├── benchmark_results.csv          # Detailed run data (always created)
@@ -499,10 +600,24 @@ test-results-{python_file_name}-{timestamp}/
 └── comparison.png                  # Baseline comparison (if --baseline used)
 ```
 
+**Batch Processing Mode (with --batch-combine):**
+```
+batch-results-{timestamp}/
+├── combined_results.csv            # All scripts' raw data in one file
+├── combined_results_summary.csv    # Statistical summary for all scripts
+├── combined_results.json           # Complete batch results
+└── plots/                          # Combined visualizations (if --plots)
+    ├── execution_time_comparison.png    # Bar chart comparing mean times
+    ├── combined_time_series.png         # Multi-line time series (colored by script)
+    ├── combined_distributions.png       # Overlapping histograms
+    ├── combined_quartiles.png           # Quartile comparison
+    └── memory_comparison.png            # Memory usage comparison (if available)
+```
+
 **Example Directory Names:**
-- `test-results-my_script-2025-10-29_10-30-15/`
-- `test-results-algorithm_test-2025-10-29_14-22-08/`
-- `test-results-performance_check-2025-10-29_16-45-33/`
+- `test-results-my_script-2025-10-29_10-30-15/` (single script)
+- `test-results-algorithm_test-2025-10-29_14-22-08/` (single script)
+- `batch-results-2025-10-29_16-45-33/` (batch processing)
 
 ### 1. Console Output
 
@@ -903,6 +1018,41 @@ julia portable_cli.jl script.py --plots
 # Will generate: time_distribution.png, time_series.png, quartiles.png
 ```
 
+**9. Python Script Requires Arguments**
+If your Python script shows usage messages or fails with "missing arguments":
+```bash
+# Wrong: script expects arguments but none provided
+julia benchmark.jl my_script.py --path /path/to/script
+
+# Correct: provide required arguments using --python-args
+julia benchmark.jl my_script.py --path /path/to/script --python-args input.txt output.txt
+
+# Example with multiple arguments
+julia benchmark.jl claude-gaze-detection.py \
+    --path "C:\path\to\gaze-detection" \
+    --python-args video.mp4 output/ --visualize
+```
+
+**10. Batch Processing Issues (New in v1.0.4)**
+Common batch processing troubleshooting:
+```bash
+# Issue: Scripts not found in batch list
+# Solution: Use full paths or ensure scripts are in working directory
+julia benchmark.jl script1.py --batch-scripts "path/to/script2.py,./script3.py"
+
+# Issue: Mixed success/failure in batch
+# The tool continues with successful scripts and reports failures
+# Check individual script outputs in the batch summary
+
+# Issue: Memory issues with large batches
+# Solution: Reduce iterations or process scripts individually
+julia benchmark.jl script1.py --batch-scripts "script2.py" --iterations 5
+
+# Issue: Plot generation fails with many scripts
+# Solution: Ensure sufficient memory and consider fewer scripts per batch
+julia benchmark.jl script1.py --batch-scripts "script2.py,script3.py" --batch-combine --plots
+```
+
 ### Performance Tips
 
 **1. Optimal Iteration Count**
@@ -919,6 +1069,13 @@ julia portable_cli.jl script.py --plots
 - Run on Unix/Linux systems for detailed memory tracking
 - Use longer timeouts for memory-intensive scripts
 - Monitor system resources during benchmarking
+
+**4. Batch Processing Optimization (New in v1.0.4)**
+- Start with fewer iterations (5-10) when testing multiple scripts
+- Use `--batch-combine` for comprehensive analysis and comparison
+- Limit batch size to 5-10 scripts for optimal performance
+- Consider script execution time when planning batch runs
+- Use meaningful script names for better visualization legends
 
 This comprehensive benchmarking tool provides professional-grade performance analysis capabilities with detailed statistical insights and visualization options.
 #

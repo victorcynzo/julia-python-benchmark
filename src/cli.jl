@@ -56,6 +56,18 @@ function parse_commandline()
         "--quiet", "-q"
             help = "Suppress detailed output"
             action = :store_true
+            
+        "--path", "-p"
+            help = "Working directory path for Python script execution"
+            arg_type = String
+            
+        "--batch-scripts"
+            help = "Additional Python scripts for batch processing (comma-separated)"
+            arg_type = String
+            
+        "--batch-combine"
+            help = "Combine batch results into unified outputs"
+            action = :store_true
     end
 
     return parse_args(s)
@@ -82,6 +94,71 @@ end
 function main()
     args = parse_commandline()
     
+    # Check if batch processing is requested
+    batch_scripts = args["batch-scripts"]
+    batch_combine = args["batch-combine"]
+    
+    if batch_scripts !== nothing
+        # Parse batch scripts
+        script_list = String[strip(s) for s in split(batch_scripts, ",")]
+        # Add the main script to the beginning
+        all_scripts = String[args["python_file"]; script_list]
+        
+        # Create base configuration
+        base_config = BenchmarkConfig(
+            "";  # Will be set per script
+            iterations = args["iterations"],
+            warmup_runs = args["warmup"],
+            timeout_seconds = args["timeout"],
+            memory_tracking = !args["no-memory"],
+            python_args = args["python-args"] !== nothing ? args["python-args"] : String[],
+            working_dir = args["path"]
+        )
+        
+        # Run batch benchmark
+        batch_result = run_batch_benchmark(all_scripts, base_config)
+        
+        if batch_combine
+            # Create combined outputs
+            try
+                # Print batch summary
+                print_batch_summary(batch_result)
+                
+                # Export combined results
+                combined_csv = joinpath(batch_result.combined_output_dir, "combined_results.csv")
+                export_batch_to_csv(batch_result, combined_csv)
+                
+                combined_json = joinpath(batch_result.combined_output_dir, "combined_results.json")
+                export_batch_to_json(batch_result, combined_json)
+                
+                # Generate combined plots
+                if args["plots"]
+                    plot_dir = joinpath(batch_result.combined_output_dir, args["plot-dir"])
+                    create_batch_performance_plots(batch_result, plot_dir)
+                end
+                
+                println("\n🎉 Batch benchmark completed successfully!")
+                println("Combined results saved to: $(batch_result.combined_output_dir)")
+                
+            catch e
+                println("Error creating combined outputs: $e")
+                exit(1)
+            end
+        else
+            # Just run individual benchmarks without combining
+            println("\n📊 Individual benchmark results:")
+            for (i, result) in enumerate(batch_result.results)
+                if result.success_count > 0
+                    script_name = batch_result.script_names[i]
+                    println("  $script_name: $(round(result.mean_time, digits=3))s ($(result.success_count)/$(result.config.iterations) successful)")
+                end
+            end
+        end
+        
+        return
+    end
+    
+    # Single script mode (original functionality)
     # Create organized output directory
     output_dir = create_output_directory(args["python_file"])
     
@@ -92,7 +169,8 @@ function main()
         warmup_runs = args["warmup"],
         timeout_seconds = args["timeout"],
         memory_tracking = !args["no-memory"],
-        python_args = args["python-args"] !== nothing ? args["python-args"] : String[]
+        python_args = args["python-args"] !== nothing ? args["python-args"] : String[],
+        working_dir = args["path"]
     )
     
     # Run benchmark

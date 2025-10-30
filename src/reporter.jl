@@ -222,3 +222,304 @@ function compare_results(current::BenchmarkResult, baseline::BenchmarkResult,
     savefig(p, output_file)
     println("Comparison plot saved to: $output_file")
 end
+
+function print_batch_summary(batch_result::BatchBenchmarkResult)
+    """Print batch benchmark results summary"""
+    
+    println("\n" * "="^80)
+    println("BATCH BENCHMARK RESULTS SUMMARY")
+    println("="^80)
+    println("Scripts benchmarked: $(length(batch_result.results))")
+    println("Timestamp: $(batch_result.timestamp)")
+    println("Combined output directory: $(batch_result.combined_output_dir)")
+    println()
+    
+    # Summary table
+    println("PERFORMANCE SUMMARY:")
+    println("-" ^ 80)
+    println("Script Name                    | Mean Time (s) | Success Rate | Stability")
+    println("-" ^ 80)
+    
+    for (i, result) in enumerate(batch_result.results)
+        script_name = batch_result.script_names[i]
+        success_rate = result.success_count / result.config.iterations * 100
+        stability = calculate_stability_metrics(result)
+        
+        # Truncate long script names
+        display_name = length(script_name) > 25 ? script_name[1:22] * "..." : script_name
+        
+        println("$(rpad(display_name, 30)) | $(rpad(round(result.mean_time, digits=3), 13)) | $(rpad(round(success_rate, digits=1), 12))% | $(stability.stability_rating)")
+    end
+    println("-" ^ 80)
+    
+    # Find best and worst performers
+    successful_results = filter(r -> r.success_count > 0, batch_result.results)
+    if !isempty(successful_results)
+        fastest_idx = argmin([r.mean_time for r in successful_results])
+        slowest_idx = argmax([r.mean_time for r in successful_results])
+        
+        fastest_name = batch_result.script_names[findfirst(r -> r === successful_results[fastest_idx], batch_result.results)]
+        slowest_name = batch_result.script_names[findfirst(r -> r === successful_results[slowest_idx], batch_result.results)]
+        
+        println("\nPERFORMANCE HIGHLIGHTS:")
+        println("🏆 Fastest: $fastest_name ($(round(successful_results[fastest_idx].mean_time, digits=3))s)")
+        println("🐌 Slowest: $slowest_name ($(round(successful_results[slowest_idx].mean_time, digits=3))s)")
+        
+        if length(successful_results) > 1
+            speedup = successful_results[slowest_idx].mean_time / successful_results[fastest_idx].mean_time
+            println("⚡ Speedup: $(round(speedup, digits=2))x faster")
+        end
+    end
+    
+    println("="^80)
+end
+
+function export_batch_to_csv(batch_result::BatchBenchmarkResult, filename::String)
+    """Export combined batch results to CSV"""
+    
+    # Create combined DataFrame
+    combined_data = []
+    
+    for (i, result) in enumerate(batch_result.results)
+        script_name = batch_result.script_names[i]
+        
+        for (run_idx, exec_time) in enumerate(result.execution_times)
+            memory_usage = length(result.memory_usage) >= run_idx ? result.memory_usage[run_idx] : 0
+            
+            push!(combined_data, (
+                script = script_name,
+                run_number = run_idx,
+                execution_time = exec_time,
+                memory_usage = memory_usage
+            ))
+        end
+    end
+    
+    df = DataFrame(combined_data)
+    CSV.write(filename, df)
+    println("Combined batch results exported to: $filename")
+    
+    # Also create summary statistics CSV
+    summary_filename = replace(filename, ".csv" => "_summary.csv")
+    summary_data = []
+    
+    for (i, result) in enumerate(batch_result.results)
+        script_name = batch_result.script_names[i]
+        stability = calculate_stability_metrics(result)
+        
+        push!(summary_data, (
+            script = script_name,
+            iterations = result.config.iterations,
+            success_count = result.success_count,
+            success_rate = result.success_count / result.config.iterations * 100,
+            mean_time = result.mean_time,
+            median_time = result.median_time,
+            std_time = result.std_time,
+            min_time = result.min_time,
+            max_time = result.max_time,
+            percentile_25 = get(result.percentiles, 25, 0.0),
+            percentile_50 = get(result.percentiles, 50, 0.0),
+            percentile_75 = get(result.percentiles, 75, 0.0),
+            percentile_90 = get(result.percentiles, 90, 0.0),
+            percentile_95 = get(result.percentiles, 95, 0.0),
+            percentile_99 = get(result.percentiles, 99, 0.0),
+            mean_memory_mb = result.mean_memory / (1024 * 1024),
+            peak_memory_mb = result.peak_memory / (1024 * 1024),
+            coefficient_of_variation = stability.coefficient_of_variation,
+            outlier_count = stability.outlier_count,
+            stability_rating = stability.stability_rating
+        ))
+    end
+    
+    summary_df = DataFrame(summary_data)
+    CSV.write(summary_filename, summary_df)
+    println("Batch summary statistics exported to: $summary_filename")
+end
+
+function export_batch_to_json(batch_result::BatchBenchmarkResult, filename::String)
+    """Export complete batch results to JSON"""
+    
+    batch_dict = Dict(
+        "batch_info" => Dict(
+            "timestamp" => string(batch_result.timestamp),
+            "script_count" => length(batch_result.results),
+            "script_names" => batch_result.script_names,
+            "combined_output_dir" => batch_result.combined_output_dir
+        ),
+        "results" => []
+    )
+    
+    for (i, result) in enumerate(batch_result.results)
+        result_dict = Dict(
+            "script_name" => batch_result.script_names[i],
+            "config" => Dict(
+                "python_file" => result.config.python_file,
+                "iterations" => result.config.iterations,
+                "warmup_runs" => result.config.warmup_runs,
+                "timeout_seconds" => result.config.timeout_seconds,
+                "memory_tracking" => result.config.memory_tracking,
+                "python_args" => result.config.python_args
+            ),
+            "results" => Dict(
+                "timestamp" => string(result.timestamp),
+                "success_count" => result.success_count,
+                "execution_times" => result.execution_times,
+                "memory_usage" => result.memory_usage,
+                "failed_runs" => result.failed_runs,
+                "statistics" => Dict(
+                    "mean_time" => result.mean_time,
+                    "median_time" => result.median_time,
+                    "std_time" => result.std_time,
+                    "min_time" => result.min_time,
+                    "max_time" => result.max_time,
+                    "percentiles" => result.percentiles,
+                    "mean_memory" => result.mean_memory,
+                    "peak_memory" => result.peak_memory
+                )
+            )
+        )
+        
+        push!(batch_dict["results"], result_dict)
+    end
+    
+    JSON3.write(filename, batch_dict)
+    println("Complete batch results exported to: $filename")
+end
+
+function create_batch_performance_plots(batch_result::BatchBenchmarkResult, output_dir::String="batch_plots")
+    """Generate combined performance visualization plots for batch results"""
+    
+    if !isdir(output_dir)
+        mkdir(output_dir)
+    end
+    
+    successful_results = filter(r -> r.success_count > 0, batch_result.results)
+    if isempty(successful_results)
+        println("No successful results to plot")
+        return
+    end
+    
+    # Get corresponding script names for successful results
+    successful_names = String[]
+    for result in successful_results
+        idx = findfirst(r -> r === result, batch_result.results)
+        push!(successful_names, batch_result.script_names[idx])
+    end
+    
+    # 1. Combined execution time comparison (bar chart)
+    mean_times = [r.mean_time for r in successful_results]
+    std_times = [r.std_time for r in successful_results]
+    
+    p1 = bar(successful_names, mean_times, 
+             yerror=std_times,
+             title="Mean Execution Time Comparison",
+             xlabel="Scripts",
+             ylabel="Time (seconds)",
+             xrotation=45,
+             legend=false,
+             color=:viridis)
+    
+    savefig(p1, joinpath(output_dir, "execution_time_comparison.png"))
+    
+    # 2. Combined time series plot (multiple lines)
+    p2 = plot(title="Execution Time Series - All Scripts",
+              xlabel="Run Number",
+              ylabel="Time (seconds)",
+              legend=:topright)
+    
+    colors = [:blue, :red, :green, :orange, :purple, :brown, :pink, :gray, :olive, :cyan]
+    
+    for (i, result) in enumerate(successful_results)
+        color = colors[((i-1) % length(colors)) + 1]
+        plot!(p2, 1:length(result.execution_times), result.execution_times,
+              label=successful_names[i],
+              marker=:circle,
+              linewidth=2,
+              color=color)
+    end
+    
+    savefig(p2, joinpath(output_dir, "combined_time_series.png"))
+    
+    # 3. Combined distribution plot (overlapping histograms)
+    p3 = plot(title="Execution Time Distributions",
+              xlabel="Time (seconds)",
+              ylabel="Density",
+              legend=:topright)
+    
+    for (i, result) in enumerate(successful_results)
+        color = colors[((i-1) % length(colors)) + 1]
+        histogram!(p3, result.execution_times,
+                  alpha=0.6,
+                  bins=15,
+                  normalize=:pdf,
+                  label=successful_names[i],
+                  color=color)
+    end
+    
+    savefig(p3, joinpath(output_dir, "combined_distributions.png"))
+    
+    # 4. Performance comparison matrix (box plots if available)
+    if STATSPLOTS_AVAILABLE && length(successful_results) > 1
+        all_times = []
+        all_labels = []
+        
+        for (i, result) in enumerate(successful_results)
+            append!(all_times, result.execution_times)
+            append!(all_labels, fill(successful_names[i], length(result.execution_times)))
+        end
+        
+        p4 = boxplot(all_labels, all_times,
+                     title="Execution Time Box Plot Comparison",
+                     xlabel="Scripts",
+                     ylabel="Time (seconds)",
+                     xrotation=45,
+                     legend=false)
+        
+        savefig(p4, joinpath(output_dir, "combined_boxplot.png"))
+    else
+        # Alternative: quartile comparison
+        p4 = plot(title="Quartile Comparison",
+                  xlabel="Scripts",
+                  ylabel="Time (seconds)",
+                  xrotation=45,
+                  legend=false)
+        
+        for (i, result) in enumerate(successful_results)
+            q1 = get(result.percentiles, 25, result.mean_time)
+            q2 = get(result.percentiles, 50, result.mean_time)
+            q3 = get(result.percentiles, 75, result.mean_time)
+            
+            scatter!(p4, [i], [q2],
+                    yerror=([q2-q1], [q3-q2]),
+                    markersize=8,
+                    color=colors[((i-1) % length(colors)) + 1])
+        end
+        
+        plot!(p4, xticks=(1:length(successful_names), successful_names))
+        savefig(p4, joinpath(output_dir, "combined_quartiles.png"))
+    end
+    
+    # 5. Memory usage comparison (if available)
+    memory_results = filter(r -> r.peak_memory > 0, successful_results)
+    if !isempty(memory_results)
+        memory_names = String[]
+        for result in memory_results
+            idx = findfirst(r -> r === result, batch_result.results)
+            push!(memory_names, batch_result.script_names[idx])
+        end
+        
+        peak_memories = [r.peak_memory / (1024 * 1024) for r in memory_results]  # Convert to MB
+        
+        p5 = bar(memory_names, peak_memories,
+                 title="Peak Memory Usage Comparison",
+                 xlabel="Scripts",
+                 ylabel="Memory (MB)",
+                 xrotation=45,
+                 legend=false,
+                 color=:plasma)
+        
+        savefig(p5, joinpath(output_dir, "memory_comparison.png"))
+    end
+    
+    println("Batch performance plots saved to: $output_dir/")
+end
