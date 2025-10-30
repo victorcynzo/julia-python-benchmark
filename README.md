@@ -351,6 +351,17 @@ Pkg.add(["ArgParse", "BenchmarkTools", "CSV", "DataFrames", "JSON3", "Plots", "S
    julia --project=. -e 'using Pkg; Pkg.add("PlotlyJS")'
    ```
 
+   **Method 4: For complex Julia commands with project activation**
+   ```powershell
+   # Instead of problematic inline commands, use the portable CLI:
+   julia portable_cli.jl script.py --iterations 5 --plots
+   
+   # Or create a temporary script for complex operations:
+   echo 'using Pkg; Pkg.activate("."); using PythonBenchmarker; main()' > temp_run.jl
+   julia temp_run.jl script.py --iterations 5 --plots
+   del temp_run.jl
+   ```
+
 5. **Missing Plot Dependencies**
    - The tool works without plotting libraries but won't generate visualizations
    - Install PlotlyJS.jl for full plotting functionality
@@ -1072,6 +1083,20 @@ julia benchmark.jl script1.py --batch-scripts "script2.py" --iterations 5
 # Issue: Plot generation fails with many scripts
 # Solution: Ensure sufficient memory and consider fewer scripts per batch
 julia benchmark.jl script1.py --batch-scripts "script2.py,script3.py" --batch-combine --plots
+```
+
+**11. Julia Command Syntax Issues on Windows**
+If you encounter parsing errors with Julia -e commands:
+```bash
+# Issue: ParseError with julia -e commands containing quotes and dots
+# Wrong: julia -e 'using Pkg; Pkg.activate("."); using PythonBenchmarker; main()'
+# Solution: Use the portable CLI instead (recommended)
+julia portable_cli.jl script.py --iterations 5 --plots
+
+# Alternative: Create temporary script file
+echo 'using Pkg; Pkg.activate("."); using PythonBenchmarker; main()' > temp.jl
+julia temp.jl script.py --iterations 5 --plots
+del temp.jl
 ```
 
 ### Performance Tips
