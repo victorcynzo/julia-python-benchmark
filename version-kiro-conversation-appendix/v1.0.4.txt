@@ -455,3 +455,58 @@ All the multi-line command examples in the README now follow the correct bash li
 
 USER INPUT #10:
 Could you also add this last part (the previous input+output and this one) to the v1.0.4.txt file?
+
+KIRO OUTPUT #10:
+Perfect! I've successfully added the last part of our conversation (USER INPUT #9 and KIRO OUTPUT #9, plus this current exchange as USER INPUT #10) to the v1.0.4.txt file.
+
+The conversation log now includes:
+- ✅ All 8 previous exchanges about the `--path` feature and batch processing implementation
+- ✅ USER INPUT #9: Your question about the incorrect backslash formatting in the README
+- ✅ KIRO OUTPUT #9: My detailed response about fixing the multi-line command syntax issues
+- ✅ USER INPUT #10: Your request to add this conversation to the log file
+
+The v1.0.4.txt file now contains the complete development log for version 1.0.4, including both the major feature implementations and the important documentation formatting fixes. This maintains the comprehensive record of all changes and improvements made during this version's development.
+
+USER INPUT #11:
+You forgot to include the --path functionallity added to version 1.0.4 that we did in the beginning of this session to the Major Changes (v1.0.4) part of the README.md file? Could you add that to the README.md file and update the v1.0.4.txt file with this user input and with your kiro output as well
+
+KIRO OUTPUT #11:
+You're absolutely right! I completely forgot to include the `--path` functionality in the Major Changes (v1.0.4) section of the README. That was a significant feature we implemented at the beginning of this session. Let me fix this by adding it to the README.
+
+### CHANGES IMPLEMENTED:
+
+**1. Added Remote Directory Support to Major Changes (v1.0.4):**
+
+I've added a comprehensive section about the `--path` functionality to the README's Major Changes (v1.0.4) section, including:
+
+**Remote Directory Support (v1.0.4)** features:
+- **Working Directory Specification**: Use `--path` to specify the directory where Python scripts should run
+- **Cross-Platform Path Support**: Works with both Windows (`C:\path\to\scripts`) and Unix (`/path/to/scripts`) paths
+- **Resource Access**: Python scripts can access files and resources in their original directory
+- **No File Copying Required**: Benchmark scripts in their native environment without moving files
+- **Automatic UTF-8 Encoding**: Enhanced Unicode support for Python scripts with progress bars on Windows
+- **Enhanced Error Reporting**: Improved error messages showing actual Python script output
+
+**Usage Examples Added:**
+```bash
+# Benchmark a script in a different directory
+julia benchmark.jl my_script.py --path "C:\Users\username\Documents\project"
+
+# With Python script arguments
+julia benchmark.jl script.py \
+    --path "/home/user/projects/ml" \
+    --python-args input.csv output.csv \
+    --iterations 20
+```
+
+**2. Updated Section Structure:**
+- The `--path` functionality is now properly documented as the first major feature of v1.0.4
+- The Advanced Batch Processing System follows as the second major feature
+- Both features are clearly marked as v1.0.4 additions
+
+**3. Complete Feature Coverage:**
+Now the Major Changes (v1.0.4) section properly covers both major features we implemented:
+- ✅ **Remote Directory Support** (`--path` option)
+- ✅ **Advanced Batch Processing System** (`--batch-scripts` and `--batch-combine` options)
+
+This ensures that users reading the README will understand that v1.0.4 introduced both the ability to benchmark scripts in remote directories AND the comprehensive batch processing capabilities. Thank you for catching this important omission!

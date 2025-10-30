@@ -8,7 +8,28 @@ A comprehensive Julia-based benchmarking tool for Python scripts featuring proce
 
 ### Major Changes (v1.0.4)
 
-**Advanced Batch Processing System (v1.0.4)**: This version introduces comprehensive batch processing capabilities that allow users to benchmark multiple Python scripts simultaneously with unified analysis and visualization:
+**Remote Directory Support (v1.0.4)**: This version introduces the `--path` option that allows users to benchmark Python scripts in any directory without copying them to the benchmark folder:
+
+- **Working Directory Specification**: Use `--path` to specify the directory where Python scripts should run
+- **Cross-Platform Path Support**: Works with both Windows (`C:\path\to\scripts`) and Unix (`/path/to/scripts`) paths
+- **Resource Access**: Python scripts can access files and resources in their original directory
+- **No File Copying Required**: Benchmark scripts in their native environment without moving files
+- **Automatic UTF-8 Encoding**: Enhanced Unicode support for Python scripts with progress bars on Windows
+- **Enhanced Error Reporting**: Improved error messages showing actual Python script output
+
+**Usage:**
+```bash
+# Benchmark a script in a different directory
+julia benchmark.jl my_script.py --path "C:\Users\username\Documents\project"
+
+# With Python script arguments
+julia benchmark.jl script.py \
+    --path "/home/user/projects/ml" \
+    --python-args input.csv output.csv \
+    --iterations 20
+```
+
+**Advanced Batch Processing System (v1.0.4)**: This version also introduces comprehensive batch processing capabilities that allow users to benchmark multiple Python scripts simultaneously with unified analysis and visualization:
 
 - **Multi-Script Benchmarking**: Benchmark multiple scripts in a single command using `--batch-scripts`
 - **Unified Output Analysis**: Combined CSV exports with all script results in one file
